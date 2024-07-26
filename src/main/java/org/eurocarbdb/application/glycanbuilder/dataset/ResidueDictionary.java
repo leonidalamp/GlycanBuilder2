@@ -20,7 +20,6 @@
 
 package org.eurocarbdb.application.glycanbuilder.dataset;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.TreeMap;
@@ -116,7 +115,8 @@ public class ResidueDictionary {
 		}
 
 		if(ret != null) return ret;
-		else return ResidueType.createUnknown(type_name);
+		else return null;
+//			return ResidueType.createUnknown(type_name);
 	}
 
 	/**
@@ -199,7 +199,7 @@ public class ResidueDictionary {
 	public static Residue createReducingEnd(String a_sIndex) {
 		String a_sKey = "";
 		if(a_sIndex == null)
-			a_sKey = TextSymbolDescriptor.FREEEND.toString();
+			a_sKey = TextSymbolDescriptor.CER.toString();
 		else
 			a_sKey = TextSymbolDescriptor.forRedType(a_sIndex).toString();
 
@@ -358,24 +358,27 @@ public class ResidueDictionary {
 	}
 
 	private static void add(ResidueType type) {
-		dictionary.put(type.getName().toLowerCase(),type);
+		if (type.isMSDefault())
+		{
+			dictionary.put(type.getName().toLowerCase(),type);
 
-		for( String s : type.getSynonyms() )
-			dictionary.put(s.toLowerCase(),type);
+			for( String s : type.getSynonyms() )
+				dictionary.put(s.toLowerCase(),type);
 
-		// add superclass
-		String superclass = type.getSuperclass();
-		if( all_residues_map.get(superclass)==null ) {
-			superclasses.add(superclass);
-			all_residues_map.put(superclass,new LinkedList<ResidueType>());
+			// add superclass
+			String superclass = type.getSuperclass();
+			if( all_residues_map.get(superclass)==null ) {
+				superclasses.add(superclass);
+				all_residues_map.put(superclass,new LinkedList<ResidueType>());
+			}
+
+			// collect residues
+			if( type.getToolbarOrder()!=0 ) direct_residues.put(type.getToolbarOrder(),type);
+			else other_residues.add(type);
+
+			all_residues.add(type);
+			all_residues_map.get(superclass).add(type);   
 		}
-
-		// collect residues
-		if( type.getToolbarOrder()!=0 ) direct_residues.put(type.getToolbarOrder(),type);
-		else other_residues.add(type);
-
-		all_residues.add(type);
-		all_residues_map.get(superclass).add(type);    
 	}
 
 	private static void initDictionary() {
@@ -391,8 +394,10 @@ public class ResidueDictionary {
 		add(ResidueType.createYCleavage());
 		add(ResidueType.createZCleavage());
 		add(ResidueType.createLCleavage());
-		if( dictionary.get("freeEnd")==null )
-			add(ResidueType.createFreeReducingEnd());
+		if( dictionary.get("Cer")==null )
+			add(ResidueType.createCerReducingEnd());
+//		if( dictionary.get("freeEnd")==null )
+//			add(ResidueType.createFreeReducingEnd());
 	}
 
 	public static ResidueType checkNoDefinedData(String str_type) {

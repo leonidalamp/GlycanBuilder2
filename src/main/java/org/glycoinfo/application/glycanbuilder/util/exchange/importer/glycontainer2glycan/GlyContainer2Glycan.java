@@ -45,7 +45,7 @@ public class GlyContainer2Glycan {
             //TODO : cyclicが最優先になるようにする
             ret = new Glycan(root.getStartRepetitionResidue(), false, _massOpt);
         } else {
-            Residue redEnd = new Residue(ResidueType.createFreeReducingEnd());
+            Residue redEnd = new Residue(ResidueType.createCerReducingEnd());
             redEnd.addChild(root);
             ret = new Glycan(redEnd, false, _massOpt);
         }

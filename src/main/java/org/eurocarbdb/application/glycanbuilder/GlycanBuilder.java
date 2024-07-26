@@ -64,7 +64,7 @@ public class GlycanBuilder extends JFrame implements ActionListener, BaseDocumen
 	protected ActionManager theActionManager;  
 
 	// graphical objects
-	protected JMenuBar theMenuBar;
+//	protected JMenuBar theMenuBar;
 	protected JToolBar theToolBarFile;
 	protected JPanel   theToolBarPanel;
 	protected GlycanCanvas  theCanvas;
@@ -145,12 +145,12 @@ public class GlycanBuilder extends JFrame implements ActionListener, BaseDocumen
 
 		theToolBarPanel.add(northTbPanel, BorderLayout.NORTH);
 		theToolBarPanel.add(theCanvas.getToolBarStructure(), BorderLayout.CENTER);
-		theToolBarPanel.add(theCanvas.getToolBarProperties(), BorderLayout.SOUTH);
+//		theToolBarPanel.add(theCanvas.getToolBarProperties(), BorderLayout.SOUTH);
 		getContentPane().add(theToolBarPanel,BorderLayout.NORTH);
 
 		// set the MenuBar
-		theMenuBar = createMenuBar();
-		setJMenuBar(theMenuBar);        
+//		theMenuBar = createMenuBar();
+//		setJMenuBar(theMenuBar);        
 
 		// set the canvas
 		JScrollPane sp = new JScrollPane(theCanvas);
@@ -255,12 +255,12 @@ public class GlycanBuilder extends JFrame implements ActionListener, BaseDocumen
 			theActionManager.add("new=" + t.getName(),ThemeManager.getResizableEmptyIcon(ICON_SIZE.L3),t.getDescription(),-1,"",this);
 
 		theActionManager.add("new",FileUtils.themeManager.getImageIcon("new"),"New",KeyEvent.VK_N, "ctrl N",this);
-		theActionManager.add("open",FileUtils.themeManager.getImageIcon("open"),"Open document...",KeyEvent.VK_O, "ctrl O",this);
-		theActionManager.add("openinto",FileUtils.themeManager.getImageIcon("openinto"),"Open additional document...",KeyEvent.VK_I, "ctrl I",this);
-		theActionManager.add("save",FileUtils.themeManager.getImageIcon("save"),"Save",KeyEvent.VK_S, "ctrl S",this);
-		theActionManager.add("saveas",FileUtils.themeManager.getImageIcon("saveas"),"Save as...",KeyEvent.VK_A, "shift ctrl S",this);
-		theActionManager.add("print",FileUtils.themeManager.getImageIcon("print"),"Print...",KeyEvent.VK_P, "ctrl P",this);
-		theActionManager.add("quit",FileUtils.themeManager.getImageIcon("quit"),"Quit",KeyEvent.VK_Q, "ctrl Q",this);
+		theActionManager.add("open",FileUtils.themeManager.getImageIcon("open"),"Open structure file...",KeyEvent.VK_O, "ctrl O",this);
+//		theActionManager.add("openinto",FileUtils.themeManager.getImageIcon("openinto"),"Open additional document...",KeyEvent.VK_I, "ctrl I",this);
+		theActionManager.add("save",FileUtils.themeManager.getImageIcon("save"),"Save structure file",KeyEvent.VK_S, "ctrl S",this);
+		theActionManager.add("saveas",FileUtils.themeManager.getImageIcon("saveas"),"Save as structure file...",KeyEvent.VK_A, "shift ctrl S",this);
+//		theActionManager.add("print",FileUtils.themeManager.getImageIcon("print"),"Print...",KeyEvent.VK_P, "ctrl P",this);
+//		theActionManager.add("quit",FileUtils.themeManager.getImageIcon("quit"),"Quit",KeyEvent.VK_Q, "ctrl Q",this);
 		
 		// import/export
 		for(java.util.Map.Entry<String,String> e : GlycanDocument.getImportFormats().entrySet() )
@@ -272,32 +272,32 @@ public class GlycanBuilder extends JFrame implements ActionListener, BaseDocumen
 
 		// help
 		theActionManager.add("about",FileUtils.themeManager.getImageIcon("about"),"About",KeyEvent.VK_B,"",this);
-	}   
+	} 
 
 	private void updateActions() {
 		theActionManager.get("save").setEnabled(theDoc.hasChanged());
 	}    
 
-	private void updateRecentFileMenu() {
-		// update recent files menu
-
-		recent_files_menu.removeAll();
-
-		FileHistory theFileHistory = theWorkspace.getFileHistory();
-		for( Iterator<String> i = theFileHistory.iterator(); i.hasNext(); ) {
-			String file_path = i.next();
-			String file_type = theFileHistory.getFileType(file_path);
-
-			JMenuItem mi = new JMenuItem(theFileHistory.getAbbreviatedName(file_path));
-			if( file_type.equals("Workspace") ) mi.setActionCommand("openall=" + file_path);
-			else if( file_type.equals("Structures") ) mi.setActionCommand("openstruct=" + file_path);
-			mi.addActionListener(this);
-			mi.setToolTipText(file_path);
-
-			recent_files_menu.add(mi);
-		}
-		if( recent_files_menu.getItemCount()==0 ) recent_files_menu.add(new JMenuItem("<empty>"));                    
-	}
+//	private void updateRecentFileMenu() {
+//		// update recent files menu
+//
+//		recent_files_menu.removeAll();
+//
+//		FileHistory theFileHistory = theWorkspace.getFileHistory();
+//		for( Iterator<String> i = theFileHistory.iterator(); i.hasNext(); ) {
+//			String file_path = i.next();
+//			String file_type = theFileHistory.getFileType(file_path);
+//
+//			JMenuItem mi = new JMenuItem(theFileHistory.getAbbreviatedName(file_path));
+//			if( file_type.equals("Workspace") ) mi.setActionCommand("openall=" + file_path);
+//			else if( file_type.equals("Structures") ) mi.setActionCommand("openstruct=" + file_path);
+//			mi.addActionListener(this);
+//			mi.setToolTipText(file_path);
+//
+//			recent_files_menu.add(mi);
+//		}
+//		if( recent_files_menu.getItemCount()==0 ) recent_files_menu.add(new JMenuItem("<empty>"));                    
+//	}
 
 	private JMenu createNewDocumentMenu() {
 
@@ -352,10 +352,10 @@ public class GlycanBuilder extends JFrame implements ActionListener, BaseDocumen
 	}
 
 	private JMenu createFileMenu() {
-		recent_files_menu = new JMenu("Recent files");
-		recent_files_menu.setMnemonic(KeyEvent.VK_R);
-		recent_files_menu.setIcon(ThemeManager.getEmptyIcon(null));
-		updateRecentFileMenu();
+//		recent_files_menu = new JMenu("Recent files");
+//		recent_files_menu.setMnemonic(KeyEvent.VK_R);
+//		recent_files_menu.setIcon(ThemeManager.getEmptyIcon(null));
+//		updateRecentFileMenu();
 
 		JMenu file_menu = new JMenu("File");
 		file_menu.setMnemonic(KeyEvent.VK_F);
@@ -369,7 +369,7 @@ public class GlycanBuilder extends JFrame implements ActionListener, BaseDocumen
 		file_menu.addSeparator();
 		file_menu.add(createImportSequenceMenu());
 		file_menu.add(createExportSequenceMenu());
-		file_menu.add(createExportDrawingMenu());
+		file_menu.add(createExportDrawingMenu()); //TODO: interesting
 		file_menu.addSeparator();
 		file_menu.add(theActionManager.get("print"));
 		file_menu.addSeparator();
@@ -410,11 +410,11 @@ public class GlycanBuilder extends JFrame implements ActionListener, BaseDocumen
 
 		toolbar.add(theActionManager.get("new"));
 		toolbar.add(theActionManager.get("open"));    
-		toolbar.add(theActionManager.get("openinto"));
+//		toolbar.add(theActionManager.get("openinto"));
 		toolbar.add(theActionManager.get("save"));
 		toolbar.add(theActionManager.get("saveas"));
-		toolbar.addSeparator();
-		toolbar.add(theActionManager.get("print"));
+//		toolbar.addSeparator();
+//		toolbar.add(theActionManager.get("print"));
 		
 		return toolbar;
 	}
@@ -824,14 +824,14 @@ public class GlycanBuilder extends JFrame implements ActionListener, BaseDocumen
 	}
 
 	public void mousePressed(MouseEvent e) {
-		if( MouseUtils.isPopupTrigger(e) ) {       
+		if( MouseUtils.isPopupTrigger(e) && theCanvas.hasCurrentSelection() && !theCanvas.isCurrentResidueCer() ) {       
 			theCanvas.enforceSelection(e.getPoint());
 			createPopupMenu().show(theCanvas, e.getX(), e.getY());   
 		}
 	}
 
 	public void mouseReleased(MouseEvent e) {
-		if( MouseUtils.isPopupTrigger(e) ) {       
+		if( MouseUtils.isPopupTrigger(e) && theCanvas.hasCurrentSelection() && !theCanvas.isCurrentResidueCer() ) {       
 			theCanvas.enforceSelection(e.getPoint());
 			createPopupMenu().show(theCanvas, e.getX(), e.getY());   
 		}
@@ -856,7 +856,7 @@ public class GlycanBuilder extends JFrame implements ActionListener, BaseDocumen
 	}   
 
 	public void fileHistoryChanged() {
-		updateRecentFileMenu();
+//		updateRecentFileMenu();
 	}   
 
 	public void actionPerformed(ActionEvent e) {

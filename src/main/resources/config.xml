@@ -105,9 +105,9 @@
 <structures_space_custom>40</structures_space_custom>
 </GraphicOptions>
 <MassOptions>
-<ion_cloud>Na</ion_cloud>
-<reducing_end_type>freeEnd</reducing_end_type>
-<derivatization>perMe</derivatization>
+<ion_cloud>0</ion_cloud>
+<reducing_end_type>Cer</reducing_end_type>
+<derivatization>Und</derivatization>
 <neutral_exchanges>0</neutral_exchanges>
 <isotope>MONO</isotope>
 </MassOptions>

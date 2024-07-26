@@ -20,9 +20,11 @@
 
 package org.eurocarbdb.application.glycanbuilder;
 
+import org.eurocarbdb.application.glycanbuilder.converter.GlycanParserFactory;
 import org.eurocarbdb.application.glycanbuilder.dataset.CoreDictionary;
 import org.eurocarbdb.application.glycanbuilder.dataset.ResidueDictionary;
 import org.eurocarbdb.application.glycanbuilder.dataset.TerminalDictionary;
+import org.eurocarbdb.application.glycanbuilder.fileutil.ExtensionFileFilter;
 import org.eurocarbdb.application.glycanbuilder.linkage.Bond;
 import org.eurocarbdb.application.glycanbuilder.linkage.Linkage;
 import org.eurocarbdb.application.glycanbuilder.renderutil.*;
@@ -59,6 +61,7 @@ import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -89,11 +92,11 @@ public class GlycanCanvas extends JComponent implements ActionListener,
 		Printable, MouseListener, MouseMotionListener, HyperlinkListener {
 	private static ICON_SIZE defaultMenuIconSize = ICON_SIZE.L3;
 	
-	private boolean allowRepeatingUnits=true;
-	private boolean allowMultipleStructures=true;
-	private boolean allowUncertainTerminals=true;
-	private boolean allowCyclicUnits=true;
-	private boolean allowAlternativeUnit = true;
+	private boolean allowRepeatingUnits=false;
+	private boolean allowMultipleStructures=false;
+	private boolean allowUncertainTerminals=false;
+	private boolean allowCyclicUnits=false;
+	private boolean allowAlternativeUnit=false;
 	
 	// Classes
 
@@ -151,7 +154,7 @@ public class GlycanCanvas extends JComponent implements ActionListener,
 	protected JScrollPane theScrollPane = null;
 	protected JToolBar theToolBarDocument;
 	protected JToolBar theToolBarStructure;
-	protected JToolBar theToolBarProperties;
+//	protected JToolBar theToolBarProperties;
 
 	protected JComboBox field_anomeric_state;
 	protected JComboBox field_anomeric_carbon;
@@ -368,7 +371,7 @@ public class GlycanCanvas extends JComponent implements ActionListener,
 		// create toolbars
 		theToolBarDocument = createToolBarDocument();
 		theToolBarStructure = createToolBarStructure();
-		theToolBarProperties = createToolBarProperties();
+//		theToolBarProperties = createToolBarProperties();
 
 		// create menus
 		theEditMenu = createEditMenu();
@@ -522,9 +525,9 @@ public class GlycanCanvas extends JComponent implements ActionListener,
 	 * Return the toolbar containing the default actions to change the residue
 	 * properties
 	 */
-	public JToolBar getToolBarProperties() {
-		return theToolBarProperties;
-	}
+//	public JToolBar getToolBarProperties() {
+//		return theToolBarProperties;
+//	}
 
 	/**
 	 * Return the menu containing the default actions to create and modify the
@@ -635,7 +638,7 @@ public class GlycanCanvas extends JComponent implements ActionListener,
 			if(this.antennaParentItem!=null) this.antennaParentItem.setVisible(isAntenna);
 		}
 		
-		getTheActionManager().get("properties").setEnabled(hasCurrentResidue());
+//		getTheActionManager().get("properties").setEnabled(hasCurrentResidue());
 
 		// theActionManager.get("orientation").putValue(Action.SMALL_ICON,
 		// getOrientationIcon().);
@@ -658,7 +661,6 @@ public class GlycanCanvas extends JComponent implements ActionListener,
 	protected void setAddStructureStatus(boolean enable){
 		ResidueRenderer rr = getTheGlycanRenderer().getResidueRenderer();
 		for (ResidueType t : ResidueDictionary.allResidues()) {
-
 			getTheActionManager().get("change=" + t.getName()).setEnabled(enable);
 
 			if (t.canHaveParent()) {
@@ -848,112 +850,112 @@ public class GlycanCanvas extends JComponent implements ActionListener,
 		}
 	}
 
-	private void updateToolbarProperties(boolean showControls) {
-		ignore_actions = true;
-		Residue current = getCurrentResidue();
-		if (theParent instanceof JRibbonFrame && showControls && current != null) {
-			boolean switchToDefault = true;
-			if (lastMouseButton != null && lastMouseButton == MouseEvent.BUTTON3) {
-				switchToDefault = false;
-			}
-
-			fireContextChanged(Context.GLYCAN_CANVAS_ITEM, switchToDefault);
-		}
-
-		if (current != null && (!current.isEndRepetition() || current.isCleavage())) {
-			Linkage parent_link = current.getParentLinkage();
-
-			if (parent_link != null) {
-				field_linkage_position.setListModel(createPositions(parent_link.getParentResidue()));
-				field_second_parent_position
-						.setListModel(createPositions(parent_link.getParentResidue()));
-			}
-			
-
-			// enable items
-			boolean can_have_parent_linkage = (parent_link != null
-					&& parent_link.getParentResidue() != null && (parent_link
-					.getParentResidue().isSaccharide()
-					|| parent_link.getParentResidue().isBracket()
-					|| parent_link.getParentResidue().isRepetition() || parent_link
-					.getParentResidue().isRingFragment()));
-
-			field_linkage_position.setEnabled(can_have_parent_linkage || this.current_residue.isEndRepetition());
-			field_anomeric_state.setEnabled(current.isSaccharide() && !current.getType().getSuperclass().equals("Bridge"));
-			field_anomeric_carbon.setEnabled(current.isSaccharide() || current.getType().getSuperclass().equals("Bridge"));
-			field_chirality.setEnabled(current.isSaccharide() && !current.getType().getSuperclass().equals("Bridge"));
-			field_ring_size.setEnabled(current.isSaccharide() && !current.getType().getSuperclass().equals("Bridge"));
-			field_second_bond.setEnabled(can_have_parent_linkage);
-			field_second_parent_position.setEnabled(can_have_parent_linkage
-					&& parent_link.hasMultipleBonds());
-			field_second_child_position.setEnabled(can_have_parent_linkage
-					&& parent_link.hasMultipleBonds());
-
-			// fill items
-			if (parent_link != null)
-				field_linkage_position.setSelectedValues(toStrings(parent_link
-						.glycosidicBond().getParentPositions()));
-			else
-				field_linkage_position.clearSelection();
-			field_anomeric_state.setSelectedItem("" + current.getAnomericState());
-			field_anomeric_carbon.setSelectedItem("" + current.getAnomericCarbon());
-			field_chirality.setSelectedItem("" + current.getChirality());
-			field_ring_size.setSelectedItem("" + current.getRingSize());
-			
-			if (parent_link != null) {
-				field_second_bond.setSelected(parent_link.hasMultipleBonds());
-				field_second_parent_position
-						.setSelectedValues(toStrings(parent_link.getBonds()
-								.get(0).getParentPositions()));
-				field_second_child_position.setSelectedItem(""
-						+ parent_link.getBonds().get(0).getChildPosition());
-			} else {
-				field_second_bond.setSelected(false);
-				field_second_parent_position.clearSelection();
-				field_second_child_position.setSelectedItem("?");
-			}		
-		} else {
-			if (theParent instanceof JRibbonFrame && !showControls) {
-				fireUndoContextChanged(Context.GLYCAN_CANVAS_ITEM);
-
-				// ((JRibbonFrame) theParent).getRibbon().setVisible(
-				// this.theLinkageRibbon, false);
-			}
-			// reset all
-			field_linkage_position.setEnabled(false);
-			field_anomeric_state.setEnabled(false);
-			field_anomeric_carbon.setEnabled(false);
-			field_chirality.setEnabled(false);
-			field_ring_size.setEnabled(false);
-			field_second_bond.setEnabled(false);
-			field_second_parent_position.setEnabled(false);
-			field_second_child_position.setEnabled(false);
-			
-			// fill items
-			field_linkage_position.clearSelection();
-			field_anomeric_state.setSelectedItem("?");
-			field_anomeric_carbon.setSelectedItem("");
-			field_chirality.setSelectedItem("?");
-			field_ring_size.setSelectedItem("?");
-			field_second_bond.setSelected(false);
-			field_second_parent_position.clearSelection();
-			field_second_child_position.setSelectedItem("?");
-		}
-
-		if(current != null && current.isEndRepetition()) {
-			field_linkage_position.setEnabled(true);
-			field_anomeric_carbon.setSelectedItem("1");
-
-			// update linkage item, 20211224, S.TSUCHIYA add
-			Linkage parent_link = current.getParentLinkage();
-			if (parent_link != null) {
-				field_linkage_position.setListModel(createPositions(parent_link.getParentResidue()));
-				field_linkage_position.setSelectedValues(toStrings(parent_link.glycosidicBond().getParentPositions()));
-			}
-		}
-		
-		ignore_actions = false;
-	}
+//	private void updateToolbarProperties(boolean showControls) {
+//		ignore_actions = true;
+//		Residue current = getCurrentResidue();
+//		if (theParent instanceof JRibbonFrame && showControls && current != null) {
+//			boolean switchToDefault = true;
+//			if (lastMouseButton != null && lastMouseButton == MouseEvent.BUTTON3) {
+//				switchToDefault = false;
+//			}
+//
+//			fireContextChanged(Context.GLYCAN_CANVAS_ITEM, switchToDefault);
+//		}
+//
+//		if (current != null && (!current.isEndRepetition() || current.isCleavage())) {
+//			Linkage parent_link = current.getParentLinkage();
+//
+//			if (parent_link != null) {
+//				field_linkage_position.setListModel(createPositions(parent_link.getParentResidue()));
+//				field_second_parent_position
+//						.setListModel(createPositions(parent_link.getParentResidue()));
+//			}
+//			
+//
+//			// enable items
+//			boolean can_have_parent_linkage = (parent_link != null
+//					&& parent_link.getParentResidue() != null && (parent_link
+//					.getParentResidue().isSaccharide()
+//					|| parent_link.getParentResidue().isBracket()
+//					|| parent_link.getParentResidue().isRepetition() || parent_link
+//					.getParentResidue().isRingFragment()));
+//
+//			field_linkage_position.setEnabled(can_have_parent_linkage || this.current_residue.isEndRepetition());
+//			field_anomeric_state.setEnabled(current.isSaccharide() && !current.getType().getSuperclass().equals("Bridge"));
+//			field_anomeric_carbon.setEnabled(current.isSaccharide() || current.getType().getSuperclass().equals("Bridge"));
+//			field_chirality.setEnabled(current.isSaccharide() && !current.getType().getSuperclass().equals("Bridge"));
+//			field_ring_size.setEnabled(current.isSaccharide() && !current.getType().getSuperclass().equals("Bridge"));
+//			field_second_bond.setEnabled(can_have_parent_linkage);
+//			field_second_parent_position.setEnabled(can_have_parent_linkage
+//					&& parent_link.hasMultipleBonds());
+//			field_second_child_position.setEnabled(can_have_parent_linkage
+//					&& parent_link.hasMultipleBonds());
+//
+//			// fill items
+//			if (parent_link != null)
+//				field_linkage_position.setSelectedValues(toStrings(parent_link
+//						.glycosidicBond().getParentPositions()));
+//			else
+//				field_linkage_position.clearSelection();
+//			field_anomeric_state.setSelectedItem("" + current.getAnomericState());
+//			field_anomeric_carbon.setSelectedItem("" + current.getAnomericCarbon());
+//			field_chirality.setSelectedItem("" + current.getChirality());
+//			field_ring_size.setSelectedItem("" + current.getRingSize());
+//			
+//			if (parent_link != null) {
+//				field_second_bond.setSelected(parent_link.hasMultipleBonds());
+//				field_second_parent_position
+//						.setSelectedValues(toStrings(parent_link.getBonds()
+//								.get(0).getParentPositions()));
+//				field_second_child_position.setSelectedItem(""
+//						+ parent_link.getBonds().get(0).getChildPosition());
+//			} else {
+//				field_second_bond.setSelected(false);
+//				field_second_parent_position.clearSelection();
+//				field_second_child_position.setSelectedItem("?");
+//			}		
+//		} else {
+//			if (theParent instanceof JRibbonFrame && !showControls) {
+//				fireUndoContextChanged(Context.GLYCAN_CANVAS_ITEM);
+//
+//				// ((JRibbonFrame) theParent).getRibbon().setVisible(
+//				// this.theLinkageRibbon, false);
+//			}
+//			// reset all
+//			field_linkage_position.setEnabled(false);
+//			field_anomeric_state.setEnabled(false);
+//			field_anomeric_carbon.setEnabled(false);
+//			field_chirality.setEnabled(false);
+//			field_ring_size.setEnabled(false);
+//			field_second_bond.setEnabled(false);
+//			field_second_parent_position.setEnabled(false);
+//			field_second_child_position.setEnabled(false);
+//			
+//			// fill items
+//			field_linkage_position.clearSelection();
+//			field_anomeric_state.setSelectedItem("?");
+//			field_anomeric_carbon.setSelectedItem("");
+//			field_chirality.setSelectedItem("?");
+//			field_ring_size.setSelectedItem("?");
+//			field_second_bond.setSelected(false);
+//			field_second_parent_position.clearSelection();
+//			field_second_child_position.setSelectedItem("?");
+//		}
+//
+//		if(current != null && current.isEndRepetition()) {
+//			field_linkage_position.setEnabled(true);
+//			field_anomeric_carbon.setSelectedItem("1");
+//
+//			// update linkage item, 20211224, S.TSUCHIYA add
+//			Linkage parent_link = current.getParentLinkage();
+//			if (parent_link != null) {
+//				field_linkage_position.setListModel(createPositions(parent_link.getParentResidue()));
+//				field_linkage_position.setSelectedValues(toStrings(parent_link.glycosidicBond().getParentPositions()));
+//			}
+//		}
+//		
+//		ignore_actions = false;
+//	}
 
 	private JMenu createAddStructureMenu() {
 		return this.a_oCommand.createAddStructureMenu(getTheActionManager());
@@ -2033,8 +2035,8 @@ public class GlycanCanvas extends JComponent implements ActionListener,
 			if(addResidueMenu==null) addResidueMenu=createAddResidueMenu();
 			menu.add(addResidueMenu);
 			
-			if(addTerminalMenu==null) addTerminalMenu=createAddTerminalMenu();
-			menu.add(addTerminalMenu);
+//			if(addTerminalMenu==null) addTerminalMenu=createAddTerminalMenu();
+//			menu.add(addTerminalMenu);
 		}
 
 		// modify structure
@@ -2046,16 +2048,16 @@ public class GlycanCanvas extends JComponent implements ActionListener,
 			menu.add(changeResidueMenu);
 			
 			// menu.add(createChangeRedEndMenu());
-			menu.add(getTheActionManager().get("bracket"));
-			menu.add(getTheActionManager().get("repeat"));
-			menu.add(getTheActionManager().get("cyclic"));
+//			menu.add(getTheActionManager().get("bracket"));
+//			menu.add(getTheActionManager().get("repeat"));
+//			menu.add(getTheActionManager().get("cyclic"));
 
-			if (change_properties) {
-				menu.addSeparator();
-				menu.add(getTheActionManager().get("properties"));
-				menu.add(getTheActionManager().get("changeredend="));
-				menu.add(getTheActionManager().get("massoptstruct"));
-			}
+//			if (change_properties) {
+//				menu.addSeparator();
+//				menu.add(getTheActionManager().get("properties"));
+//				menu.add(getTheActionManager().get("changeredend="));
+//				menu.add(getTheActionManager().get("massoptstruct"));
+//			}
 		}
 
 		// visual placement
@@ -2117,7 +2119,7 @@ public class GlycanCanvas extends JComponent implements ActionListener,
 		repeatButton=toolbar.add(getTheActionManager().get("repeat"));
 		cyclicButton=toolbar.add(getTheActionManager().get("cyclic"));
 		//altButton = toolbar.add(getTheActionManager().get("alternative"));
-		toolbar.add(getTheActionManager().get("properties"));
+//		toolbar.add(getTheActionManager().get("properties"));
 		
 		this.antennaParentButton=toolbar.add(getTheActionManager().get("antennaParent"));
 		//toolbar.add(getTheActionManager().get("stringNotation"));
@@ -2139,7 +2141,8 @@ public class GlycanCanvas extends JComponent implements ActionListener,
 	}
 
 	private JToolBar createToolBarProperties() {
-		JToolBar toolbar = new JToolBar(){
+		JToolBar toolbar = new JToolBar()
+		{
 			
 			@Override
 			public Dimension getPreferredSize() {
@@ -2674,6 +2677,13 @@ public class GlycanCanvas extends JComponent implements ActionListener,
 	 */
 	public boolean hasCurrentResidue() {
 		return (current_residue != null);
+	}
+	
+	/**
+	 * Return <code>true</code> if a the reducing end Cer has the focus
+	 */
+	public boolean isCurrentResidueCer() {
+		return hasCurrentResidue() && current_residue.getResidueName().equalsIgnoreCase("Cer");
 	}
 
 	/**
@@ -3621,9 +3631,80 @@ public class GlycanCanvas extends JComponent implements ActionListener,
 			e.getMessage();
 		}
 	}
+	
+	/**
+	  Export the structures to a file in a specified format. Show a
+	  file open dialog to select the origin
+	  @return <code>true</code> if the operation was successful
+	  @see GlycanDocument#importFrom
+	  @see SVGUtils#export
+	*/
+	public boolean onSaveImage()
+	{
+		try {
+			OutputImageDialog dig = new OutputImageDialog(this.theParent);
+			dig.setVisible(true);
+			if(!dig.isCanceled()) {
+				if( theDoc.getStructures().size()>1 && !theDoc.supportMultipleStructures(dig.getFormat()) ) {
+					int retValue = JOptionPane.showOptionDialog(this, "The selected format does not support multiple structures.\n" +
+							"Only the first structure will be exported. Continue?",
+							"Cannot export all structures", JOptionPane.YES_NO_OPTION, 
+							JOptionPane.WARNING_MESSAGE, null, null, null);  
+				
+					if( retValue!=JOptionPane.YES_OPTION )
+						return false;
+				}
+				
+				// imposto la dialog per il salvataggio del file
+				JFileChooser fileChooser = new JFileChooser();
+				//20211215, S.TSUCHIYA add
+				if (GlycanParserFactory.getExportFormats().containsKey(dig.getFormat()))
+					fileChooser.addChoosableFileFilter(new ExtensionFileFilter("txt", "Glycan text"));
+				else
+					fileChooser.addChoosableFileFilter(new ExtensionFileFilter(dig.getFormat(), "Graphic image"));
+				fileChooser.setCurrentDirectory(theWorkspace.getFileHistory().getRecentFolder());    
+				
+				// visualizzo la dialog
+				int returnVal = fileChooser.showSaveDialog(this);        
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+				
+					// aggiunge l'estension
+					String filename = fileChooser.getSelectedFile().getAbsolutePath();
+					filename = FileUtils.enforceExtension(filename,dig.getFormat());
+				
+					// chiede conferma prima di sovrascrivere il file
+					File file = new File(filename);                    
+					if (file.exists()) {
+						int retValue = JOptionPane.showOptionDialog(this, "File exists. Overwrite file: " + filename + "?",
+								"Salva documento", JOptionPane.YES_NO_CANCEL_OPTION, 
+								JOptionPane.QUESTION_MESSAGE, null, null, null);  
+						if( retValue!=JOptionPane.YES_OPTION )
+							return false;
+					}            
+				
+					// esporta il documento su file
+					if( theDoc.isSequenceFormat(dig.getFormat()) ) {
+						if( theDoc.exportTo(filename,dig.getFormat()) )
+//							setLastExportedFile(filename);
+						return true;
+					}
+					else if( SVGUtils.export((GlycanRendererAWT) theWorkspace.getGlycanRenderer(),filename,theDoc.getStructures(),theWorkspace.getGraphicOptions().SHOW_MASSES,theWorkspace.getGraphicOptions().SHOW_REDEND,dig.getFormat()) ) {
+//						setLastExportedFile(filename);
+						return true;
+					}        
+				}
+				return false;
+			}
+			
+		} catch (Exception e) {
+			e.getMessage();
+		}	
+		return true;
+	}
 
 	/**
 	 * Get string from current structure
+	 * 
 	 */
 	public void onGetStringFromStructure() {
 		try {
@@ -4174,6 +4255,7 @@ public class GlycanCanvas extends JComponent implements ActionListener,
 		if(a_enumAction.equals(CanvasActionDescriptor.ADDSTRUCTURE)) onAddStructure(param);
 		if(a_enumAction.equals(CanvasActionDescriptor.ADDSTRUCTURESTR)) onAddStructureFromString();
 		if(a_enumAction.equals(CanvasActionDescriptor.WRITE)) onAddStructureFromString();
+		if(a_enumAction.equals(CanvasActionDescriptor.SAVEIMAGE)) onSaveImage();
 		if(a_enumAction.equals(CanvasActionDescriptor.GETSTRUCTURESTR)) onGetStringFromStructure();
 		if(a_enumAction.equals(CanvasActionDescriptor.ADD)) onAdd(param);
 		if(a_enumAction.equals(CanvasActionDescriptor.INSERT)) onInsertBefore(param);
@@ -4344,7 +4426,7 @@ public class GlycanCanvas extends JComponent implements ActionListener,
 	public void fireUpdatedSelection(boolean completeStructure) {
 		// update actions
 		updateActions();
-		updateToolbarProperties(!completeStructure);
+//		updateToolbarProperties(!completeStructure);
 
 		// fire events
 		for (Iterator<SelectionChangeListener> i = listeners.iterator(); i.hasNext();)
@@ -4630,35 +4712,35 @@ public class GlycanCanvas extends JComponent implements ActionListener,
 		return theGlycanRenderer;
 	}
 	
-	public boolean isAllowRepeatingUnits(){
-		return allowRepeatingUnits;
-	}
+//	public boolean isAllowRepeatingUnits(){
+//		return allowRepeatingUnits;
+//	}
+//
+//	public void setAllowRepeatingUnits(boolean allowRepeatingUnits){
+//		this.allowRepeatingUnits=allowRepeatingUnits;
+//		
+//		updateActions();
+//	}
+//
+//	public boolean isAllowMultipleStructures(){
+//		return allowMultipleStructures;
+//	}
+//
+//	public void setAllowMultipleStructures(boolean allowMultipleStructures){
+//		this.allowMultipleStructures=allowMultipleStructures;
+//		
+//		updateActions();
+//	}
 
-	public void setAllowRepeatingUnits(boolean allowRepeatingUnits){
-		this.allowRepeatingUnits=allowRepeatingUnits;
-		
-		updateActions();
-	}
-
-	public boolean isAllowMultipleStructures(){
-		return allowMultipleStructures;
-	}
-
-	public void setAllowMultipleStructures(boolean allowMultipleStructures){
-		this.allowMultipleStructures=allowMultipleStructures;
-		
-		updateActions();
-	}
-
-	public boolean isAllowUncertainTerminals(){
-		return allowUncertainTerminals;
-	}
-
-	public void setAllowUncertainTerminals(boolean allowUncertainTerminals){
-		this.allowUncertainTerminals=allowUncertainTerminals;
-		
-		updateActions();
-	}
+//	public boolean isAllowUncertainTerminals(){
+//		return allowUncertainTerminals;
+//	}
+//
+//	public void setAllowUncertainTerminals(boolean allowUncertainTerminals){
+//		this.allowUncertainTerminals=allowUncertainTerminals;
+//		
+//		updateActions();
+//	}
 	
 	public JFrame getFrame() {
 		return this.theParent;

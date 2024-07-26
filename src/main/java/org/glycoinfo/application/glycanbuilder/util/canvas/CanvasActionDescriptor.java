@@ -24,6 +24,7 @@ public enum CanvasActionDescriptor {
 	WRITE("write"),
 	GETSTRUCTURE("getstructure"),
 	GETSTRUCTURESTR("getstructurestr"),
+	SAVEIMAGE("saveImage"),
 	ADD("add"),
 	INSERT("insert"),
 	CHANGE("change"),

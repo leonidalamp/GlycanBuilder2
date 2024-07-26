@@ -47,19 +47,21 @@ public class CanvasAction {
 	}
 	
 	private void createStructureAction (ActionManager a_oActionManager, ThemeManager themeManager, ICON_SIZE defaultMenuIconSize, ActionListener a_oListener) {
-		a_oActionManager.add("write", themeManager.getResizableIcon("write", defaultMenuIconSize), "Add structure from string", KeyEvent.VK_S, "", a_oListener);
-		a_oActionManager.add("addstructurestr", themeManager.getResizableIcon("import", defaultMenuIconSize), "Add structure from string", KeyEvent.VK_S, "", a_oListener);
+		a_oActionManager.add("write", themeManager.getResizableIcon("write", defaultMenuIconSize), "Add structure from string", -1, "", a_oListener);
+		a_oActionManager.add("addstructurestr", themeManager.getResizableIcon("import", defaultMenuIconSize), "Add structure from string", -1, "", a_oListener);
 		a_oActionManager.add("getstructurestr", themeManager.getResizableIcon("export", defaultMenuIconSize), "Get string from structure", -1, "", a_oListener);
-		a_oActionManager.add("addcomposition", themeManager.getResizableIcon("piechart", defaultMenuIconSize), "Add composition", KeyEvent.VK_C, "", a_oListener);
-		a_oActionManager.add("bracket", themeManager.getResizableIcon("bracket", defaultMenuIconSize), "Add bracket", KeyEvent.VK_B, "ctrl B", a_oListener);
-		a_oActionManager.add("repeat", themeManager.getResizableIcon("repeat", defaultMenuIconSize), "Add repeating unit", KeyEvent.VK_U, "ctrl R", a_oListener);
-		a_oActionManager.add("cyclic", themeManager.getResizableIcon("cyclic", defaultMenuIconSize), "Add cyclic symbol", KeyEvent.VK_C, "ctrl C", a_oListener);
+		a_oActionManager.add("saveImage", themeManager.getResizableIcon("export", defaultMenuIconSize), "Save to image file", -1, "", a_oListener);
+		a_oActionManager.add("addcomposition", themeManager.getResizableIcon("piechart", defaultMenuIconSize), "Add composition", -1, "", a_oListener);
+		a_oActionManager.add("bracket", themeManager.getResizableIcon("bracket", defaultMenuIconSize), "Add bracket", -1, "", a_oListener);
+		a_oActionManager.add("repeat", themeManager.getResizableIcon("repeat", defaultMenuIconSize), "Add repeating unit", -1, "", a_oListener);
+		a_oActionManager.add("cyclic", themeManager.getResizableIcon("cyclic", defaultMenuIconSize), "Add cyclic symbol", -1, "", a_oListener);
 		//a_oActionManager.add("alternative", themeManager.getResizableIcon("alternative", defaultMenuIconSize), "Add alternative unit", KeyEvent.VK_L, "ctrl L", a_oListener);
-		a_oActionManager.add("properties", themeManager.getResizableIcon("properties", defaultMenuIconSize), "Residue properties", KeyEvent.VK_P, "ctrl ENTER", a_oListener);
+		a_oActionManager.add("settings", themeManager.getResizableIcon("properties", defaultMenuIconSize), "View settings", KeyEvent.VK_P, "ctrl ENTER", a_oListener); //TODO: consider adding
+		a_oActionManager.add("properties", themeManager.getResizableIcon("properties", defaultMenuIconSize), "Residue properties", -1, "", a_oListener);
 		a_oActionManager.add("moveccw", themeManager.getResizableIcon("rotateccw", defaultMenuIconSize), "Move residue counter-clockwise", KeyEvent.VK_K, "ctrl shift LEFT", a_oListener);
 		a_oActionManager.add("movecw", themeManager.getResizableIcon("rotatecw", defaultMenuIconSize), "Move residue clockwise", KeyEvent.VK_W, "ctrl shift RIGHT", a_oListener);
 		//a_oActionManager.add("changeredend=", themeManager.getResizableIcon("changeredend", defaultMenuIconSize), "Change reducing end type", KeyEvent.VK_Y, "", a_oListener);
-		a_oActionManager.add("massoptstruct", themeManager.getResizableIcon("massoptions", defaultMenuIconSize), "Mass options of selected structures", KeyEvent.VK_M, "", a_oListener);
+		a_oActionManager.add("massoptstruct", themeManager.getResizableIcon("massoptions", defaultMenuIconSize), "Mass options of selected structures", -1, "", a_oListener);
 
 		// structure
 		for (CoreType t : CoreDictionary.getCores()) {

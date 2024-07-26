@@ -66,7 +66,7 @@ public class GraphicOptions {
 	 * notation. To set the value of this variable the setDisplay() method must
 	 * be used
 	 */
-	public String DISPLAY = DISPLAY_NORMALINFO;
+	public String DISPLAY = DISPLAY_COMPACT;
 	/** Use the custom settings defined by the user */
 	public static final String DISPLAY_CUSTOM = "custom";
 	/**
@@ -366,18 +366,14 @@ public class GraphicOptions {
 					(int) (MASS_TEXT_SIZE_DEFAULT * SCALE));
 			MASS_TEXT_FONT_FACE = MASS_TEXT_FONT_FACE_DEFAULT;
 
-			if (display.equals(DISPLAY_COMPACT)) {
-				NODE_SPACE = (int) (NODE_SPACE_DEFAULT * SCALE / 2.);
-				SHOW_INFO = false;
-				DISPLAY = DISPLAY_COMPACT;
-			} else if (display.equals(DISPLAY_NORMAL)) {
+			if (display.equals(DISPLAY_NORMAL)) {
 				NODE_SPACE = (int) (NODE_SPACE_DEFAULT * SCALE);
 				SHOW_INFO = false;
 				DISPLAY = DISPLAY_NORMAL;
 			} else {
-				NODE_SPACE = (int) (NODE_SPACE_DEFAULT * SCALE);
-				SHOW_INFO = (SCALE >= 1.);
-				DISPLAY = DISPLAY_NORMALINFO;
+				NODE_SPACE = (int) (NODE_SPACE_DEFAULT * SCALE / 2.);
+				SHOW_INFO = false;
+				DISPLAY = DISPLAY_COMPACT;
 			}
 			
 			SAVE_SPECTRA=SAVE_SPECTRA_DEFAULT;

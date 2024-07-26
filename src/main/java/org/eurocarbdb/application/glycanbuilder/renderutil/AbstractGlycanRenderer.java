@@ -22,6 +22,8 @@ import java.util.TreeMap;
 import java.util.LinkedList;
 
 import org.eurocarbdb.application.glycanbuilder.BookingManager;
+import org.eurocarbdb.application.glycanbuilder.FragmentCollection;
+import org.eurocarbdb.application.glycanbuilder.Fragmenter;
 import org.eurocarbdb.application.glycanbuilder.Glycan;
 import org.eurocarbdb.application.glycanbuilder.Pair;
 import org.eurocarbdb.application.glycanbuilder.Residue;
@@ -270,11 +272,26 @@ public abstract class AbstractGlycanRenderer implements GlycanRenderer{
 	abstract protected void assignID (Glycan structure);
 
 	protected String getMassText(Glycan structure) {
+		String chemicalFormula = "";
+		try {
+			
+			Fragmenter frag = new Fragmenter();
+			FragmentCollection test = frag.computeAllFragments(structure);
+			chemicalFormula = structure.computeMolecule().toString();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+//		FragmentCollection test = new Fragmenter().computeFragments(structure, structure.getRoot());
+		
 		StringBuilder sb = new StringBuilder();
 		DecimalFormat df = new DecimalFormat("0.0000");
 		double mz = structure.computeMZ();
-
-		sb.append("m/z: ");
+		
+		sb.append("Chemical Formula: ");
+		sb.append(chemicalFormula);
+		sb.append("; m/z: ");
 		if (mz < 0.) sb.append("???");
 		else sb.append(df.format(mz));
 		sb.append(" [");

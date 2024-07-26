@@ -390,7 +390,8 @@ public class Molecule {
 		StringBuilder sb = new StringBuilder();
 		for( Map.Entry<Atom,Integer> a : atoms.entrySet() ) {
 			sb.append(a.getKey().toString());
-			sb.append(a.getValue().toString());
+			if (a.getValue() > 1)
+				sb.append(a.getValue().toString());
 		}
 		for( int i=0; i<Math.abs(charges); i++ ) {
 			if( charges>0 )

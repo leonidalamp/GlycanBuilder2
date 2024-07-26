@@ -68,16 +68,16 @@ public class MassOptions {
 			PERDACETYLATED };
 
 	/** Structure persubstitution */
-	public String DERIVATIZATION = PERMETHYLATED;
+	public String DERIVATIZATION = NO_DERIVATIZATION;
 
 	/** Reducing end modification */
-	public ResidueType REDUCING_END_TYPE = ResidueType.createFreeReducingEnd();
+	public ResidueType REDUCING_END_TYPE = ResidueType.createCerReducingEnd();
 
 	/**
 	 * List of charges associated to the glycan molecule due to the ionization
 	 * process in the mass spectrometer
 	 */
-	public IonCloud ION_CLOUD = new IonCloud("Na");
+	public IonCloud ION_CLOUD = new IonCloud(NO_ION);
 
 	/**
 	 * List of neutral exchanges between charges present on the glycan molecule
@@ -179,7 +179,7 @@ public class MassOptions {
 	 */
 	public MassOptions(String deriv) {
 		DERIVATIZATION = deriv;
-		REDUCING_END_TYPE = ResidueType.createFreeReducingEnd();
+		REDUCING_END_TYPE = ResidueType.createCerReducingEnd();
 	}
 
 	/**
@@ -191,7 +191,7 @@ public class MassOptions {
 
 		REDUCING_END_TYPE = ResidueDictionary.findResidueType(marker);
 		if (REDUCING_END_TYPE == null)
-			REDUCING_END_TYPE = ResidueType.createFreeReducingEnd();
+			REDUCING_END_TYPE = ResidueType.createCerReducingEnd();
 	}
 
 	/**
@@ -203,7 +203,7 @@ public class MassOptions {
 
 		REDUCING_END_TYPE = marker;
 		if (REDUCING_END_TYPE == null)
-			REDUCING_END_TYPE = ResidueType.createFreeReducingEnd();
+			REDUCING_END_TYPE = ResidueType.createCerReducingEnd();
 	}
 
 	/**
@@ -239,7 +239,7 @@ public class MassOptions {
 		MassOptions ret = new MassOptions();
 
 		ret.DERIVATIZATION = NO_DERIVATIZATION;
-		ret.REDUCING_END_TYPE = ResidueType.createFreeReducingEnd();
+		ret.REDUCING_END_TYPE = ResidueType.createCerReducingEnd();
 
 		ret.ION_CLOUD = new IonCloud();
 		ret.NEUTRAL_EXCHANGES = new IonCloud();

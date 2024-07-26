@@ -204,8 +204,8 @@ public class CanvasCommand {
 		JToolBar toolbar = new JToolBar();
 		toolbar.setFloatable(false);
 		toolbar.addSeparator();
-		toolbar.add(a_oActionManager.get("addstructurestr"));
-		toolbar.add(a_oActionManager.get("getstructurestr"));
+//		toolbar.add(a_oActionManager.get("addstructurestr"));
+		toolbar.add(a_oActionManager.get("saveImage"));
 		toolbar.addSeparator();
 		toolbar.add(a_oActionManager.get("undo"));
 		toolbar.add(a_oActionManager.get("redo"));

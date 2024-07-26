@@ -72,8 +72,9 @@ public class ResidueType {
 	protected boolean make_alditol;
 	protected boolean can_redend;
 	protected boolean can_parent;
+	protected boolean isMSDefault;
+	protected String 	msDefaultDesc;
 	protected String  description;
-
 	protected Molecule molecule;
 
 	//--
@@ -107,6 +108,8 @@ public class ResidueType {
 		make_alditol = false;
 		can_redend = false;
 		can_parent = false;
+		isMSDefault = false;
+		msDefaultDesc = "Empty";
 		description = "Empty";    
 		molecule = null;
 	 }
@@ -116,7 +119,8 @@ public class ResidueType {
 	  */
 	 public ResidueType(String init) throws Exception {
 		 LinkedList<String> tokens = TextUtils.tokenize(init,"\t");
-		 if( tokens.size()!=24) throw new Exception("Invalid string format: " + init);
+		 if( tokens.size()!=26 ) 
+			 throw new Exception("Invalid string format: " + init);
 		
 		 name            = tokens.get(0);
 		 superclass      = tokens.get(1);
@@ -141,7 +145,9 @@ public class ResidueType {
 		 make_alditol    = parseBoolean(tokens.get(20));
 		 can_redend      = parseBoolean(tokens.get(21));
 		 can_parent      = parseBoolean(tokens.get(22));
-		 description     = tokens.get(23);
+		 isMSDefault		 = parseBoolean(tokens.get(23));
+		 msDefaultDesc   = tokens.get(24);
+		 description     = tokens.get(25);
 		 res_mass_main   = 0.;
 		 res_mass_avg    = 0.;
 		 
@@ -182,92 +188,113 @@ public class ResidueType {
 		 return TextUtils.tokenize(str,",").toArray(new String[0]);
 	 }
 
-	 /**
-       Create a generic saccharide type with unspecified mass and name
-       <code>_name</code>
-	  */
-	 static public ResidueType createSaccharide(String _name) {
-		 ResidueType ret = new ResidueType();
-		 ret.name = _name;
-		 ret.superclass = "Saccharide";
-		 ret.is_saccharide = true;
-		 ret.is_cleavable = true;
-		 ret.nlinkages = 5;    
-		 ret.linkage_pos = new char[] {'1','2','3','4','6'};
-		 ret.can_redend = false;
-		 ret.can_parent = true;
-		 ret.description = _name;
-		 return ret;
-	 }
+//	 /**
+//       Create a generic saccharide type with unspecified mass and name
+//       <code>_name</code>
+//	  */
+//	 static public ResidueType createSaccharide(String _name) {
+//		 ResidueType ret = new ResidueType();
+//		 ret.name = _name;
+//		 ret.superclass = "Saccharide";
+//		 ret.is_saccharide = true;
+//		 ret.is_cleavable = true;
+//		 ret.nlinkages = 5;    
+//		 ret.linkage_pos = new char[] {'1','2','3','4','6'};
+//		 ret.can_redend = false;
+//		 ret.can_parent = true;
+//		 ret.description = _name;
+//		 return ret;
+//	 }
+//
+//	 /**
+//       Create a generic residue type with unspecified mass and name
+//       <code>_name</code>
+//	  */
+//	 static public ResidueType createUnknown(String _name) {
+//		 ResidueType ret = new ResidueType();
+//		 ret.name = _name;
+//		 ret.superclass = "Unknown";
+//		 ret.nlinkages = 10;    
+//		 ret.linkage_pos = new char[] {'1','2','3','4','6','7','8','9','N'};
+//		 ret.can_redend = true;
+//		 ret.can_parent = true;
+//		 ret.description = _name;
+//		 return ret;
+//	 }
+//
+//	/**
+//	 Create a generic residue type with unspecified mass and name
+//	 <code>_name</code>
+//	 */
+//	static public ResidueType createAssigned (String _name) {
+//		ResidueType ret = new ResidueType();
+//		ret.name = _name;
+//		ret.superclass = "Assigned";
+//		ret.nlinkages = 0;
+//		ret.linkage_pos = new char[] {};
+//		ret.can_redend = false;
+//		ret.can_parent = true;
+//		ret.description = _name;
+//		ret.is_saccharide = true;
+//		return ret;
+//	}
 
+//	 /**
+//       Create a generic substituent type with unspecified mass and name
+//       <code>_name</code>
+//	  */
+//	 static public ResidueType createSubstituent(String _name) {
+//		 ResidueType ret = new ResidueType();
+//		 ret.name = _name;
+//		 ret.superclass = "Substituent";
+//		 ret.is_cleavable = true;
+//		 ret.nlinkages = 1;    
+//		 ret.linkage_pos = new char[] {'1'};
+//		 ret.can_redend = false;
+//		 ret.can_parent = false;
+//		 ret.description = _name;
+//		 return ret;
+//	 }
+	 
 	 /**
-       Create a generic residue type with unspecified mass and name
-       <code>_name</code>
-	  */
-	 static public ResidueType createUnknown(String _name) {
+		   Create a Cer reducing end.
+		*/
+		static public ResidueType createCerReducingEnd() {
 		 ResidueType ret = new ResidueType();
-		 ret.name = _name;
-		 ret.superclass = "Unknown";
-		 ret.nlinkages = 10;    
-		 ret.linkage_pos = new char[] {'1','2','3','4','6','7','8','9','N'};
+		 ret.name = "Cer";
+		 ret.superclass = "Reducing end";
+		 ret.composition_class = "Cer";
+		 ret.composition = "";
+		 ret.nmethyls = 1;
+		 ret.nacetyls = 1;
+		 ret.nlinkages = 1;    
 		 ret.can_redend = true;
 		 ret.can_parent = true;
-		 ret.description = _name;
+		 ret.isMSDefault = true;
+		 ret.msDefaultDesc = "Cer reducing end";
+		 ret.description = "Cer reducing end";
+		 ret.updateMolecule();
 		 return ret;
-	 }
-
-	/**
-	 Create a generic residue type with unspecified mass and name
-	 <code>_name</code>
-	 */
-	static public ResidueType createAssigned (String _name) {
-		ResidueType ret = new ResidueType();
-		ret.name = _name;
-		ret.superclass = "Assigned";
-		ret.nlinkages = 0;
-		ret.linkage_pos = new char[] {};
-		ret.can_redend = false;
-		ret.can_parent = true;
-		ret.description = _name;
-		ret.is_saccharide = true;
-		return ret;
-	}
-
-	 /**
-       Create a generic substituent type with unspecified mass and name
-       <code>_name</code>
-	  */
-	 static public ResidueType createSubstituent(String _name) {
-		 ResidueType ret = new ResidueType();
-		 ret.name = _name;
-		 ret.superclass = "Substituent";
-		 ret.is_cleavable = true;
-		 ret.nlinkages = 1;    
-		 ret.linkage_pos = new char[] {'1'};
-		 ret.can_redend = false;
-		 ret.can_parent = false;
-		 ret.description = _name;
-		 return ret;
-	 }
+		} 
 
 	 /**
        Create a free reducing end type.
 	  */
-	 static public ResidueType createFreeReducingEnd() {
-		 ResidueType ret = new ResidueType();
-		 ret.name = "freeEnd";
-		 ret.superclass = "Reducing end";
-		 ret.composition_class = "freeEnd";
-		 ret.composition = "H2O";
-		 ret.nmethyls = 2;
-		 ret.nacetyls = 2;
-		 ret.nlinkages = 1;    
-		 ret.can_redend = true;
-		 ret.can_parent = true;
-		 ret.description = "Free reducing end";
-		 ret.updateMolecule();
-		 return ret;
-	 }   
+//	 static public ResidueType createFreeReducingEnd() {
+//		 ResidueType ret = new ResidueType();
+//		 ret.name = "freeEnd";
+//		 ret.superclass = "Reducing end";
+//		 ret.composition_class = "freeEnd";
+//		 ret.composition = "H2O";
+//		 ret.nmethyls = 2;
+//		 ret.nacetyls = 2;
+//		 ret.nlinkages = 1;    
+//		 ret.can_redend = true;
+//		 ret.can_parent = true;
+//		 ret.description = "Free reducing end";
+//		 ret.updateMolecule();
+//		 return ret;
+//	 }   
 
 	 /**
        Create a generic reducing end type with name <code>name</code>
@@ -288,6 +315,8 @@ public class ResidueType {
 		 ret.nlinkages = 1;    
 		 ret.can_redend = true;
 		 ret.can_parent = true;
+		 ret.isMSDefault = true;
+		 ret.msDefaultDesc = "Other reducing end";
 		 ret.description = "Other reducing end";
 		 return ret;
 	 }
@@ -311,6 +340,8 @@ public class ResidueType {
 		 ret.nlinkages = 1;    
 		 ret.can_redend = false;
 		 ret.can_parent = true;
+		 ret.isMSDefault = true;
+		 ret.msDefaultDesc = "Other residue";
 		 ret.description = "Other residue";
 		 return ret;
 	 }
@@ -565,7 +596,7 @@ public class ResidueType {
        end.
 	  */
 	 public boolean isFreeReducingEnd() {
-		 return name.equals("freeEnd");
+		 return name.equals("freeEnd") || name.equals("Cer");
 	 }
 
 	 /**
@@ -573,7 +604,7 @@ public class ResidueType {
        reducing end marker.
 	  */
 	 public boolean isReducingEndMarker() {
-		 return name.equals("#freeEnd") || name.equals("#redEnd");
+		 return name.equals("#freeEnd") || name.equals("#redEnd") || name.equals("#Cer");
 	 }
 
 	 /**
@@ -1068,12 +1099,20 @@ public class ResidueType {
 	 public boolean canHaveParent() {
 		 return can_parent;
 	 }
+	 
+	 /**
+		   Return <code>true</code> if a residue of this type is a default 
+		   for MS experimental data.
+		*/
+		public boolean isMSDefault() {
+			return isMSDefault;
+		}
 
 	 /**
-       Return the description of this residue type.
+       Return the description of this residue type (if there is a default description for MS experiments, that will be returned).
 	  */
 	 public String getDescription() {
-		 return description;
+		 return msDefaultDesc == null ? description : msDefaultDesc;
 	 }    
 	 
 	 public void changeDescription(String a_sNotation) {

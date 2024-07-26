@@ -182,7 +182,9 @@ public class GlycoCTParser implements GlycanParser {
 		if (structure.getRoot() != null) {
 			Residue root = structure.getRoot();
 			if (!root.isSaccharide()) {
-				if (root.getTypeName().equals("freeEnd"))
+				if (root.getTypeName().equals("Cer"))
+					toSugar(root.firstChild(), sugar, false, null, null, manager);
+				else if (root.getTypeName().equals("freeEnd"))
 					toSugar(root.firstChild(), sugar, false, null, null, manager);
 				else if (root.getTypeName().equals("redEnd"))
 					toSugar(root.firstChild(), sugar, true, null, null, manager);
@@ -358,15 +360,18 @@ public class GlycoCTParser implements GlycanParser {
 				null);
 
 		if (root != null && !root.isReducingEnd()) {
-			if (root.isAlditol()) {
-				Residue redend = ResidueDictionary.newResidue("redEnd");
-				redend.addChild(root);
-				root = redend;
-			} else {
-				Residue redend = ResidueDictionary.newResidue("freeEnd");
-				redend.addChild(root);
-				root = redend;
-			}
+			Residue redend = ResidueDictionary.newResidue("Cer");
+			redend.addChild(root);
+			root = redend;
+//			if (root.isAlditol()) {
+//				Residue redend = ResidueDictionary.newResidue("redEnd");
+//				redend.addChild(root);
+//				root = redend;
+//			} else {
+//				Residue redend = ResidueDictionary.newResidue("freeEnd");
+//				redend.addChild(root);
+//				root = redend;
+//			}
 		}
 
 		Glycan ret = new Glycan(root, false, default_mass_opt);
@@ -560,9 +565,9 @@ public class GlycoCTParser implements GlycanParser {
 			boolean tolerate_unknown_residues) throws Exception {
 
 		if (converter == null) {
-			if (tolerate_unknown_residues)
-				return new Residue(ResidueType.createSaccharide(iupac_name));
-			else
+//			if (tolerate_unknown_residues)
+//				return new Residue(ResidueType.createSaccharide(iupac_name));
+//			else
 				throw new Exception("Cannot convert iupac name to residue");
 		}
 
@@ -572,9 +577,9 @@ public class GlycoCTParser implements GlycanParser {
 					iupac_name, GlycanNamescheme.GWB, GlycanNamescheme.GLYCOCT);
 			type = data.getBasetype();
 		} catch (Exception e) {
-			if (tolerate_unknown_residues)
-				return new Residue(ResidueType.createSaccharide(iupac_name));
-			else
+//			if (tolerate_unknown_residues)
+//				return new Residue(ResidueType.createSaccharide(iupac_name));
+//			else
 				return null;
 		}
 
@@ -628,15 +633,15 @@ public class GlycoCTParser implements GlycanParser {
 					return ret;
 				}
 			}
-			if (tolerate_unknown_residues) {
-				Residue ret = new Residue(
-						ResidueType.createSaccharide(iupac_name));
-				ret.setAnomericState(anomeric_state);
-				ret.setChirality(chirality);
-				ret.setRingSize(ring_size);
-				ret.setAlditol(true);
-				return ret;
-			}
+//			if (tolerate_unknown_residues) {
+//				Residue ret = new Residue(
+//						ResidueType.createSaccharide(iupac_name));
+//				ret.setAnomericState(anomeric_state);
+//				ret.setChirality(chirality);
+//				ret.setRingSize(ring_size);
+//				ret.setAlditol(true);
+//				return ret;
+//			}
 		} else {
 			// substituent
 			for (ResidueType t : ResidueDictionary.allResidues()) {
@@ -645,8 +650,8 @@ public class GlycoCTParser implements GlycanParser {
 					return new Residue(t);
 			}
 
-			if (tolerate_unknown_residues)
-				return new Residue(ResidueType.createSubstituent(iupac_name));
+//			if (tolerate_unknown_residues)
+//				return new Residue(ResidueType.createSubstituent(iupac_name));
 		}
 
 		return null;

@@ -1009,7 +1009,8 @@ public class Residue {
 	protected boolean hasLinkedParent() {
 		return( parent_linkage!=null && parent_linkage.getParentResidue()!=null && 
 				(parent_linkage.getParentResidue().getTypeName().equals("freeEnd") ||  
-						parent_linkage.getParentResidue().getTypeName().equals("redEnd")) );
+						parent_linkage.getParentResidue().getTypeName().equals("redEnd") ||  
+						parent_linkage.getParentResidue().getTypeName().equals("Cer")) );
 	}
 
 	/*

@@ -4,6 +4,7 @@ public enum TextSymbolDescriptor {
 
 	FREEEND("freeEnd"),
 	REDEND("redEnd"),
+	CER("Cer"),
 	PA("PA"),
 	TAB("2AB"),
 	AA("AA"),
@@ -37,7 +38,7 @@ public enum TextSymbolDescriptor {
 			if(_a_sRedType.equals(enum_str.a_sRedType)) return enum_str;
 		}
 		
-		return TextSymbolDescriptor.FREEEND;
+		return TextSymbolDescriptor.CER;
 	}
 	
 	public String toString() {

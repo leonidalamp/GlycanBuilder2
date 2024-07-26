@@ -121,4 +121,12 @@ public class Atom implements Comparable<Atom> {
     public double getAverageMass() {
     return avg_mass;
     }
+
+		@Override
+		public String toString()
+		{
+			return symbol;
+		}
+    
+    
 }

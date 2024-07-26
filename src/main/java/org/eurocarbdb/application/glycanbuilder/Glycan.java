@@ -29,6 +29,7 @@ import org.eurocarbdb.application.glycanbuilder.dataset.ResidueDictionary;
 import org.eurocarbdb.application.glycanbuilder.linkage.Bond;
 import org.eurocarbdb.application.glycanbuilder.linkage.Linkage;
 import org.eurocarbdb.application.glycanbuilder.logutility.LogUtils;
+import org.eurocarbdb.application.glycanbuilder.massutil.Atom;
 import org.eurocarbdb.application.glycanbuilder.massutil.IonCloud;
 import org.eurocarbdb.application.glycanbuilder.massutil.MassAware;
 import org.eurocarbdb.application.glycanbuilder.massutil.MassOptions;
@@ -190,7 +191,6 @@ public class Glycan implements Comparable, SAXUtils.SAXWriter, MassAware {
        are trasformed into their superclasses.
        @return a new glycan object representing the composition
 	 */
-
 	public Glycan getComposition() {
 		return getComposition(true);
 	}
@@ -414,7 +414,7 @@ public class Glycan implements Comparable, SAXUtils.SAXWriter, MassAware {
        Reset the reducing end marker to a free reducing end.
 	 */
 	public void removeReducingEndModification() {
-		setReducingEndType(ResidueType.createFreeReducingEnd());
+		setReducingEndType(ResidueType.createCerReducingEnd());
 	}
 
 	/**
@@ -1484,6 +1484,9 @@ public class Glycan implements Comparable, SAXUtils.SAXWriter, MassAware {
 			return;
 
 		ResidueType type = node.getType();
+		
+		Fragmenter test = new Fragmenter();
+		System.out.println(node.getResidueName()+" \t"+node.isCleavable()+" \t"+test.canDoCleavage(node)+" \t"+test.canDoRingFragment(node));
 		int no_bonds = node.getNoBonds();
 
 		// add residue

@@ -90,8 +90,8 @@ public class WURCSSequence2ToGlycan {
 
 			// without linkage label
 			if (this.isCompositionWithoutLinkage(this.glycan)) {
-				Residue withoutLinkage = new Residue(ResidueType.createAssigned("no glycosidic linkages"));
-				this.glycan.addAntenna(withoutLinkage);
+//				Residue withoutLinkage = new Residue(ResidueType.createAssigned("no glycosidic linkages"));
+//				this.glycan.addAntenna(withoutLinkage);
 			}
 		}
 	}
