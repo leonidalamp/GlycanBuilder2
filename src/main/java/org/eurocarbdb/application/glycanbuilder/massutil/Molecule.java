@@ -350,6 +350,13 @@ public class Molecule {
 	public void remove(String atom, int num) throws Exception {
 		add(atom,-num);
 	}
+	
+	/**
+	  	Remove one atom of type <code>atom</code> from to the molecule.
+	*/    
+	public void remove(String atom) throws Exception {
+		remove(atom, 1);
+	}
 
 	/**
        Remove one instance of the atom <code>a</code> from the
@@ -389,7 +396,8 @@ public class Molecule {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		for( Map.Entry<Atom,Integer> a : atoms.entrySet() ) {
-			sb.append(a.getKey().toString());
+			if (a.getValue() > 0)
+				sb.append(a.getKey().toString());
 			if (a.getValue() > 1)
 				sb.append(a.getValue().toString());
 		}

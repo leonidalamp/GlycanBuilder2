@@ -1483,16 +1483,14 @@ public class Glycan implements Comparable, SAXUtils.SAXWriter, MassAware {
 		if( node==null )
 			return;
 
-		ResidueType type = node.getType();
-		
-		Fragmenter test = new Fragmenter();
-		System.out.println(node.getResidueName()+" \t"+node.isCleavable()+" \t"+test.canDoCleavage(node)+" \t"+test.canDoRingFragment(node));
+		ResidueType type = node.getType();	
 		int no_bonds = node.getNoBonds();
 
 		// add residue
-		if( type.getMolecule()==null )
-			throw new Exception("Cannot compute molecule for residue: " + node.getTypeName());
-		ret.add(type.getMolecule());    
+		Molecule molecule = type.getMolecule();
+		if( molecule==null )
+			molecule = new Molecule("");
+		ret.add(molecule);    
 
 		// modify for alditol
 		if( node.isReducingEnd() && node.getType().makesAlditol() )
@@ -1523,7 +1521,7 @@ public class Glycan implements Comparable, SAXUtils.SAXWriter, MassAware {
 
 		// add children
 		for( Linkage l : node.getChildrenLinkages() ) {
-			ret.remove(MassUtils.water,l.getNoBonds());        // remove a water molecule for each bond                
+				ret.remove(MassUtils.water,l.getNoBonds());        // remove a water molecule for each bond                
 			computeMolecule(ret,l.getChildResidue(),substitution_molecule);
 		}
 	}

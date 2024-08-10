@@ -205,23 +205,39 @@ public class ResidueType {
 //		 ret.description = _name;
 //		 return ret;
 //	 }
-//
-//	 /**
-//       Create a generic residue type with unspecified mass and name
-//       <code>_name</code>
-//	  */
-//	 static public ResidueType createUnknown(String _name) {
-//		 ResidueType ret = new ResidueType();
-//		 ret.name = _name;
-//		 ret.superclass = "Unknown";
-//		 ret.nlinkages = 10;    
-//		 ret.linkage_pos = new char[] {'1','2','3','4','6','7','8','9','N'};
-//		 ret.can_redend = true;
-//		 ret.can_parent = true;
-//		 ret.description = _name;
-//		 return ret;
-//	 }
-//
+
+	 /**
+       Create a generic residue type with unspecified mass and name
+       <code>_name</code>
+	  */
+	 static public ResidueType createUnknown(String _name) {
+		 ResidueType ret = new ResidueType();
+		 ret.name = _name;
+		 ret.superclass = "Unknown";
+		 ret.nlinkages = 10;    
+		 ret.linkage_pos = new char[] {'1','2','3','4','6','7','8','9','N'};
+		 ret.can_redend = true;
+		 ret.can_parent = true;
+		 ret.description = _name;
+		 return ret;
+	 }
+	 
+	 static public ResidueType createUnknown(String _name, String _composition)
+	 {
+		 ResidueType ret = new ResidueType();
+		 ret.name = _name;
+		 ret.superclass = "Unknown";
+		 ret.composition = _composition;
+		 ret.nlinkages = 10;    
+		 ret.linkage_pos = new char[] {'1','2','3','4','6','7','8','9','N'};
+		 ret.can_redend = true;
+		 ret.can_parent = true;
+		 ret.msDefaultDesc = _name;
+		 ret.description = _name;
+		 ret.updateMolecule();
+		 return ret;
+	 }
+
 //	/**
 //	 Create a generic residue type with unspecified mass and name
 //	 <code>_name</code>
@@ -271,7 +287,7 @@ public class ResidueType {
 		 ret.can_redend = true;
 		 ret.can_parent = true;
 		 ret.isMSDefault = true;
-		 ret.msDefaultDesc = "Cer reducing end";
+		 ret.msDefaultDesc = "Cer";
 		 ret.description = "Cer reducing end";
 		 ret.updateMolecule();
 		 return ret;
@@ -316,7 +332,7 @@ public class ResidueType {
 		 ret.can_redend = true;
 		 ret.can_parent = true;
 		 ret.isMSDefault = true;
-		 ret.msDefaultDesc = "Other reducing end";
+		 ret.msDefaultDesc = "Other";
 		 ret.description = "Other reducing end";
 		 return ret;
 	 }
@@ -341,7 +357,7 @@ public class ResidueType {
 		 ret.can_redend = false;
 		 ret.can_parent = true;
 		 ret.isMSDefault = true;
-		 ret.msDefaultDesc = "Other residue";
+		 ret.msDefaultDesc = "Other";
 		 ret.description = "Other residue";
 		 return ret;
 	 }
@@ -896,6 +912,15 @@ public class ResidueType {
 			 return composition_class;
 		 return name;
 	 }
+	 
+	 
+	 /**
+		   Return the descriptor for sum composition notion (as needed in the context of MS, e.g. HexN for Hexosamine).
+		*/
+	 public String getMSDefaultDescriptor()
+	 {
+		 return msDefaultDesc;
+	 }
 
 	 /**
        Return the atomic composition associated with this residue type.
@@ -1109,11 +1134,11 @@ public class ResidueType {
 		}
 
 	 /**
-       Return the description of this residue type (if there is a default description for MS experiments, that will be returned).
+       Return the description of this residue type.
 	  */
 	 public String getDescription() {
-		 return msDefaultDesc == null ? description : msDefaultDesc;
-	 }    
+		 return description;
+	 } 
 	 
 	 public void changeDescription(String a_sNotation) {
 		 this.description = a_sNotation;

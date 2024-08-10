@@ -264,34 +264,46 @@ public class ResidueDictionary {
 
 	/**
        Create a B cleavage.
+       TODO: add defintion to resources
        @see ResidueType#createBCleavage
 	 */
 	static public Residue createBCleavage() {
-		return new Residue(findResidueType("#bcleavage"));
+		ResidueType res = ResidueType.createUnknown("#bcleavage", "");
+		return new Residue(res);
+//		return new Residue(findResidueType("#bcleavage"));
 	}
 
 	/**
        Create a C cleavage.
+       TODO: add defintion to resources
        @see ResidueType#createCCleavage
 	 */
 	static public Residue createCCleavage() {
-		return new Residue(findResidueType("#ccleavage"));
+		ResidueType res = ResidueType.createUnknown("#ccleavage", "H2O"); //for formula & mass calculation
+		return new Residue(res);
+//	return new Residue(findResidueType("#ccleavage"));
 	}
 
 	/**
        Create a Y cleavage.
+       TODO: add defintion to resources
        @see ResidueType#createYCleavage
 	 */
 	static public Residue createYCleavage() {
-		return new Residue(findResidueType("#ycleavage"));
+		ResidueType res = ResidueType.createUnknown("#ycleavage", "H2O"); //for formula & mass calculation
+		return new Residue(res);
+//	return new Residue(findResidueType("#ycleavage"));
 	}
 
 	/**
        Create a Z cleavage.
+       TODO: add defintion to resources
        @see ResidueType#createZCleavage
 	 */
 	static public Residue createZCleavage() {
-		return new Residue(findResidueType("#zcleavage"));
+		ResidueType res = ResidueType.createUnknown("#zcleavage", "");
+		return new Residue(res);
+//	return new Residue(findResidueType("#zcleavage"));
 	}
 
 	/**

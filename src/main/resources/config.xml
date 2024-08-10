@@ -104,6 +104,17 @@
 <show_redend>false</show_redend>
 <structures_space_custom>40</structures_space_custom>
 </GraphicOptions>
+<FragmentOptions>
+<max_no_crossrings>1</max_no_crossrings>
+<internal_fragments>false</internal_fragments>
+<add_xfragments>false</add_xfragments>
+<add_yfragments>true</add_yfragments>
+<add_zfragments>true</add_zfragments>
+<max_no_cleavages>3</max_no_cleavages>
+<add_afragments>false</add_afragments>
+<add_bfragments>true</add_bfragments>
+<add_cfragments>true</add_cfragments>
+</FragmentOptions>
 <MassOptions>
 <ion_cloud>0</ion_cloud>
 <reducing_end_type>Cer</reducing_end_type>

@@ -27,7 +27,7 @@ public enum SubstituentTypeDescriptor {
 		a_aTypes.add(NTYPE);
 		a_aTypes.add(INORGANIC);
 		a_aTypes.add(ORGANIC);
-		a_aTypes.add(UNKNOWN);
+//		a_aTypes.add(UNKNOWN);
 		
 		return a_aTypes;
 	}

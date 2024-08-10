@@ -607,8 +607,9 @@ public class Fragmenter {
 	 */
 	static public boolean canDoCleavage(Residue current) {
 		return (current != null && current.isCleavable()
-				&& current.getParent() != null && current.getParent()
-				.isCleavable());
+				&& current.getParent() != null && (current.getParent().isCleavable() 
+				|| current.getParent().getType().getName().equals("Cer")
+				));
 	}
 
 	/**

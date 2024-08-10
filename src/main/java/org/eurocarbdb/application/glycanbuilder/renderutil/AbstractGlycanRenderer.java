@@ -23,12 +23,14 @@ import java.util.LinkedList;
 
 import org.eurocarbdb.application.glycanbuilder.BookingManager;
 import org.eurocarbdb.application.glycanbuilder.FragmentCollection;
+import org.eurocarbdb.application.glycanbuilder.FragmentEntry;
 import org.eurocarbdb.application.glycanbuilder.Fragmenter;
 import org.eurocarbdb.application.glycanbuilder.Glycan;
 import org.eurocarbdb.application.glycanbuilder.Pair;
 import org.eurocarbdb.application.glycanbuilder.Residue;
 import org.eurocarbdb.application.glycanbuilder.ResiduePlacement;
 import org.eurocarbdb.application.glycanbuilder.ResidueStyleDictionary;
+import org.eurocarbdb.application.glycanbuilder.converter.converterLDA.LDAParser;
 import org.eurocarbdb.application.glycanbuilder.converterGWS.GWSParser;
 import org.eurocarbdb.application.glycanbuilder.dataset.ResidueDictionary;
 import org.eurocarbdb.application.glycanbuilder.dataset.ResiduePlacementDictionary;
@@ -274,14 +276,19 @@ public abstract class AbstractGlycanRenderer implements GlycanRenderer{
 	protected String getMassText(Glycan structure) {
 		String chemicalFormula = "";
 		try {
-			
-			Fragmenter frag = new Fragmenter();
-			FragmentCollection test = frag.computeAllFragments(structure);
 			chemicalFormula = structure.computeMolecule().toString();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		//TODO: replace with button call in GUI
+		if (true)
+		{
+			new LDAParser(false, structure).writeGlycan();
+			new LDAParser(true, structure).writeGlycan();
+		}
+			
 		
 //		FragmentCollection test = new Fragmenter().computeFragments(structure, structure.getRoot());
 		

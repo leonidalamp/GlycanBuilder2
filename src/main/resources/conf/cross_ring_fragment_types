@@ -137,8 +137,8 @@ HexNAc,GalNAc,GlcNAc	1	p	A	1	4	3	2	3	N,3,4	-	C5H9O3N1
 HexNAc,GalNAc,GlcNAc	1	p	X	1	4	2	2	2	1,6	-	C3H6O3
 HexNAc,GalNAc,GlcNAc	1	p	A	1	5	4	3	4	N,3,4,6	-	C7H13O4N1
 HexNAc,GalNAc,GlcNAc	1	p	X	1	5	1	1	1	1	-	C1H2O2
-HexNAc,GalNAc,GlcNAc	1	p	A	2	4	2	2	2	3,4	-	C2H4O2
-HexNAc,GalNAc,GlcNAc	1	p	X	2	4	3	2	3	1,N,6	-	C6H11O4N1
+HexNAc,GalNAc,GlcNAc	1	p	A	2	4	2	2	2	3,4	-	C6H11O4N1
+HexNAc,GalNAc,GlcNAc	1	p	X	2	4	3	2	3	1,N,6	-	C2H4O2
 HexNAc,GalNAc,GlcNAc	1	p	A	2	5	3	3	3	3,4,6	-	C4H8O3
 HexNAc,GalNAc,GlcNAc	1	p	X	2	5	2	1	2	1,N	-	C4H7O3N1
 HexNAc,GalNAc,GlcNAc	1	p	A	3	5	2	2	2	4,6	-	C3H6O2
