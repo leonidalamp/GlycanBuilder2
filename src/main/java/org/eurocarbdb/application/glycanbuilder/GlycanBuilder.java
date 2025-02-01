@@ -54,7 +54,7 @@ import java.net.*;
 */
 
 
-public class GlycanBuilder extends JFrame implements ActionListener, BaseDocument.DocumentChangeListener, FileHistory.Listener, MouseListener {
+public class GlycanBuilder extends JPanel implements ActionListener, BaseDocument.DocumentChangeListener, FileHistory.Listener, MouseListener {
 
 	private static final long serialVersionUID = 0L;    
 
@@ -74,6 +74,8 @@ public class GlycanBuilder extends JFrame implements ActionListener, BaseDocumen
 	protected String last_exported_file = null;
 
 	private Monitor halt_interactions = null;
+	
+	private JFrame parentFrame = null;
 
 	protected Set<ContextAwareContainer> contextAwareListeners;
 	
@@ -89,7 +91,8 @@ public class GlycanBuilder extends JFrame implements ActionListener, BaseDocumen
 	 * @throws MalformedURLException 
 	 */
 
-	public GlycanBuilder() throws MalformedURLException {
+	public GlycanBuilder(JFrame parentFrame) throws MalformedURLException {
+		this.parentFrame = parentFrame;
 
 		ThemeManager themeManager= new ThemeManager(null, this.getClass());
 
@@ -109,7 +112,7 @@ public class GlycanBuilder extends JFrame implements ActionListener, BaseDocumen
 			e.printStackTrace();
 		}
 
-		LogUtils.setReportOwner(this);
+		LogUtils.setReportOwner(parentFrame);
 		LogUtils.setGraphicalReport(true);       
 
 		// create the default workspace
@@ -126,11 +129,11 @@ public class GlycanBuilder extends JFrame implements ActionListener, BaseDocumen
 		createActions();
 
 		// set the layout
-		getContentPane().setLayout(new BorderLayout());
+		this.setLayout(new BorderLayout());
 
 		// create canvas
 		//TODO : 
-		theCanvas = new GlycanCanvas(this,theWorkspace, themeManager, false);     
+		theCanvas = new GlycanCanvas(parentFrame,theWorkspace, themeManager, false);     
 
 		// set the toolbars
 		UIManager.getDefaults().put("ToolTip.hideAccelerator",Boolean.TRUE);
@@ -146,7 +149,7 @@ public class GlycanBuilder extends JFrame implements ActionListener, BaseDocumen
 		theToolBarPanel.add(northTbPanel, BorderLayout.NORTH);
 		theToolBarPanel.add(theCanvas.getToolBarStructure(), BorderLayout.CENTER);
 //		theToolBarPanel.add(theCanvas.getToolBarProperties(), BorderLayout.SOUTH);
-		getContentPane().add(theToolBarPanel,BorderLayout.NORTH);
+		this.add(theToolBarPanel,BorderLayout.NORTH);
 
 		// set the MenuBar
 //		theMenuBar = createMenuBar();
@@ -155,7 +158,7 @@ public class GlycanBuilder extends JFrame implements ActionListener, BaseDocumen
 		// set the canvas
 		JScrollPane sp = new JScrollPane(theCanvas);
 		theCanvas.setScrollPane(sp);
-		getContentPane().add(sp,BorderLayout.CENTER);
+		this.add(sp,BorderLayout.CENTER);
 
 		// add listeners
 		theDoc.addDocumentChangeListener(this);
@@ -163,17 +166,17 @@ public class GlycanBuilder extends JFrame implements ActionListener, BaseDocumen
 		theWorkspace.addDocumentChangeListener(this);
 		theWorkspace.getFileHistory().addHistoryChangedListener(this);
 
-		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		this.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent we) {
-				onExit();
-			}
-		});
+//		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+//		this.addWindowListener(new WindowAdapter() {
+//			public void windowClosing(WindowEvent we) {
+//				onExit();
+//			}
+//		});
 
 		// setto la dimensione e la posizione della finestra
-		setIconImage(FileUtils.themeManager.getImageIcon("logo").getImage());
+//		setIconImage(FileUtils.themeManager.getImageIcon("logo").getImage());
 		setSize(800, 600);        
-		setLocationRelativeTo(null);
+//		setLocationRelativeTo(null);
 
 		// initialize document
 		onNew(theDoc);
@@ -227,7 +230,7 @@ public class GlycanBuilder extends JFrame implements ActionListener, BaseDocumen
 
 		// display the wait cursor and block user input
 		if( halt_interactions.isFree() ) {
-			Component glassPane = getGlassPane();
+			Component glassPane = this.getRootPane().getGlassPane();
 			glassPane.addMouseListener( new MouseAdapter() { }  );
 			glassPane.setCursor( Cursor.getPredefinedCursor( Cursor.WAIT_CURSOR ) );
 			glassPane.setVisible( true );
@@ -243,7 +246,7 @@ public class GlycanBuilder extends JFrame implements ActionListener, BaseDocumen
 		// restore normal user interaction
 		halt_interactions.release();
 		if( halt_interactions.isFree() )
-			getGlassPane().setVisible(false);        
+			this.getRootPane().getGlassPane().setVisible(false);        
 	}
 
 
@@ -369,7 +372,7 @@ public class GlycanBuilder extends JFrame implements ActionListener, BaseDocumen
 		file_menu.addSeparator();
 		file_menu.add(createImportSequenceMenu());
 		file_menu.add(createExportSequenceMenu());
-		file_menu.add(createExportDrawingMenu()); //TODO: interesting
+		file_menu.add(createExportDrawingMenu()); 
 		file_menu.addSeparator();
 		file_menu.add(theActionManager.get("print"));
 		file_menu.addSeparator();
@@ -427,11 +430,11 @@ public class GlycanBuilder extends JFrame implements ActionListener, BaseDocumen
 	//----------------------------
 	// Document handling actions
 
-	private void updateTitle() {
-		String title = FileHistory.getAbbreviatedName(theDoc.getFileName()) + " - GlycanBuilder";
-		if( theDoc.hasChanged() ) title = "* " + title;
-		setTitle(title);
-	}
+//	private void updateTitle() {
+//		String title = FileHistory.getAbbreviatedName(theDoc.getFileName()) + " - GlycanBuilder";
+//		if( theDoc.hasChanged() ) title = "* " + title;
+//		setTitle(title);
+//	}
 
 	private File getLastExportedFile() {
 		if( last_exported_file!=null && last_exported_file.length()>0 ) {
@@ -795,7 +798,7 @@ public class GlycanBuilder extends JFrame implements ActionListener, BaseDocumen
 	public void onAbout() {
 
 		try {
-			JDialog dlg = new JDialog(this, "About GlycanBuilder2", true);
+			JDialog dlg = new JDialog(parentFrame, "About GlycanBuilder2", true);
 			JEditorPane html = new JEditorPane(this.getClass().getResource("/html/about_builder.html"));
 			html.setEditable(false);
 			html.setBorder(new EmptyBorder(0,20,20,20));
@@ -846,12 +849,12 @@ public class GlycanBuilder extends JFrame implements ActionListener, BaseDocumen
 			theDoc.addDocumentChangeListener(this);
 			theCanvas.setDocument(theDoc);     
 		}
-		updateTitle();
+//		updateTitle();
 		updateActions();
 	}
 
 	public void documentChanged(BaseDocument.DocumentChangeEvent e) {
-		updateTitle();
+//		updateTitle();
 		updateActions();
 	}   
 
@@ -890,9 +893,30 @@ public class GlycanBuilder extends JFrame implements ActionListener, BaseDocumen
        Run the application. Open the application frame
 	 * @throws MalformedURLException 
 	 */
-	public static void main(String[] args) throws MalformedURLException {    
-		new GlycanBuilder().setVisible(true);
-		NativeInterface.runEventPump();
-	}   
+	public static void main(String[] args) throws MalformedURLException {
+		JFrame jf=new JFrame();
+    jf.setLayout(null);
+    jf.setSize(1000, 1000);
+    jf.setVisible(true);
+    jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    GlycanBuilder test = new GlycanBuilder(new JFrame());
+    NativeInterface.runEventPump();
+    
+    test.setBorder(null);
+    
+    JPanel panel = new JPanel();
+    panel.setSize(900,900);
+    panel.setLayout(new GridBagLayout());
+    panel.add(test, new GridBagConstraints(0,0,1,1,1.0,1.0,GridBagConstraints.CENTER,GridBagConstraints.BOTH,new Insets(5,5,5,5),5,5));
+    
+    jf.add(panel);
+    jf.repaint();
+    test.revalidate();
+    test.setVisible(false);
+    test.invalidate();
+    test.setVisible(true);
+    test.revalidate();
+    test.repaint();
+	}
 }
 

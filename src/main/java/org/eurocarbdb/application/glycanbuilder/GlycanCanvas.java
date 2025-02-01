@@ -93,7 +93,7 @@ public class GlycanCanvas extends JComponent implements ActionListener,
 	private static ICON_SIZE defaultMenuIconSize = ICON_SIZE.L3;
 	
 	private boolean allowRepeatingUnits=false;
-	private boolean allowMultipleStructures=false;
+	private boolean allowMultipleStructures=true;
 	private boolean allowUncertainTerminals=false;
 	private boolean allowCyclicUnits=false;
 	private boolean allowAlternativeUnit=false;
@@ -2331,6 +2331,13 @@ public class GlycanCanvas extends JComponent implements ActionListener,
 	public void getScreenshot() {
 		ClipUtils.setContents(new GlycanSelection(getTheGlycanRenderer(), theDoc
 				.getStructures()));
+	}
+	
+	/**
+	 * Return the displayed glycans
+	 */
+	public LinkedList<Glycan> getGlycans() {
+		return theDoc.getStructures();
 	}
 
 	/**

@@ -14,7 +14,9 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -22,15 +24,11 @@ import java.util.TreeMap;
 import java.util.LinkedList;
 
 import org.eurocarbdb.application.glycanbuilder.BookingManager;
-import org.eurocarbdb.application.glycanbuilder.FragmentCollection;
-import org.eurocarbdb.application.glycanbuilder.FragmentEntry;
-import org.eurocarbdb.application.glycanbuilder.Fragmenter;
 import org.eurocarbdb.application.glycanbuilder.Glycan;
 import org.eurocarbdb.application.glycanbuilder.Pair;
 import org.eurocarbdb.application.glycanbuilder.Residue;
 import org.eurocarbdb.application.glycanbuilder.ResiduePlacement;
 import org.eurocarbdb.application.glycanbuilder.ResidueStyleDictionary;
-import org.eurocarbdb.application.glycanbuilder.converter.converterLDA.LDAParser;
 import org.eurocarbdb.application.glycanbuilder.converterGWS.GWSParser;
 import org.eurocarbdb.application.glycanbuilder.dataset.ResidueDictionary;
 import org.eurocarbdb.application.glycanbuilder.dataset.ResiduePlacementDictionary;
@@ -273,30 +271,23 @@ public abstract class AbstractGlycanRenderer implements GlycanRenderer{
 
 	abstract protected void assignID (Glycan structure);
 
-	protected String getMassText(Glycan structure) {
+	/**
+	 * Returns the text to show underneath depicted structures
+	 */
+	public String getMassText(Glycan structure) {
 		String chemicalFormula = "";
 		try {
 			chemicalFormula = structure.computeMolecule().toString();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			//do nothing
 		}
-		
-		//TODO: replace with button call in GUI
-		if (true)
-		{
-			new LDAParser(false, structure).writeGlycan();
-			new LDAParser(true, structure).writeGlycan();
-		}
-			
-		
-//		FragmentCollection test = new Fragmenter().computeFragments(structure, structure.getRoot());
 		
 		StringBuilder sb = new StringBuilder();
 		DecimalFormat df = new DecimalFormat("0.0000");
 		double mz = structure.computeMZ();
-		
-		sb.append("Chemical Formula: ");
+		sb.append(buildGlycanName(structure));
+		sb.append("; glycan headgroup: ");
 		sb.append(chemicalFormula);
 		sb.append("; m/z: ");
 		if (mz < 0.) sb.append("???");
@@ -306,6 +297,54 @@ public abstract class AbstractGlycanRenderer implements GlycanRenderer{
 		sb.append("]");
 
 		return sb.toString();
+	}
+	
+	/**
+	 * Builds the glycan shorthand based on the LDA nomenclature
+	 */
+	private String buildGlycanName(Glycan structure)
+	{
+		StringBuilder sb = new StringBuilder();
+		ArrayList<Residue> allResidues = new ArrayList<Residue>();
+		if( structure.getRoot()!=null ) {
+			allResidues.addAll(collectChildResidues(structure.getRoot()));
+		}
+		TreeMap<String,Integer> residueCount = new TreeMap<String,Integer>();
+		for (Residue res : allResidues)
+		{
+			String resDesc = res.getType().getMSDefaultDescriptor();
+			if (!residueCount.containsKey(resDesc)) residueCount.put(resDesc, 0);
+			residueCount.put(resDesc, residueCount.get(resDesc)+1);
+		}
+		ArrayList<String> resTypes = new ArrayList(residueCount.keySet());
+		Collections.sort(resTypes);
+		if (resTypes.contains("Cer")) //ensuring Cer is at the end
+		{
+			resTypes.remove("Cer");
+			resTypes.add("Cer");
+		}
+		for (int i=0;i<resTypes.size();i++)
+		{
+			String res = resTypes.get(i);
+			sb.append(res);
+			sb.append(residueCount.get(res) > 1 ? residueCount.get(res) : "");
+			if (i<resTypes.size()-1)
+				sb.append("_");
+		}
+		
+		return sb.toString();
+	}
+	
+	/**
+	 * Collects all children of a residue in a list
+	 */
+	private ArrayList<Residue> collectChildResidues(Residue r)
+	{
+		ArrayList<Residue> children = new ArrayList<Residue>();
+		children.add(r);
+		for( Linkage l : r.getChildrenLinkages() )
+			children.addAll(collectChildResidues(l.getChildResidue()));
+		return children;
 	}
 
 	abstract protected void paintQuantity(Paintable paintable, Residue antennae, int quantity,BBoxManager bboxManager);
