@@ -886,6 +886,11 @@ public class GlycanBuilder extends JPanel implements ActionListener, BaseDocumen
 		else if( action.equals("about") ) onAbout();
 		updateActions();
 	}
+	
+	public GlycanShorthandConverterLDA getShorthandLDAConverter()
+	{
+		return new GlycanShorthandConverterLDA();
+	}
 
 	///-------------------------
 

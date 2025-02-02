@@ -28,22 +28,22 @@ package org.eurocarbdb.application.glycanbuilder;
 
 public class FragmentOptions {
 
-	/** Specify if type A ring fragments should be computed (default = false)*/
-	public boolean ADD_AFRAGMENTS = false;
+	/** Specify if type A ring fragments should be computed (default = true)*/
+	public boolean ADD_AFRAGMENTS = true;
 	/** Specify if type B cleavages should be computed (default = true)*/
 	public boolean ADD_BFRAGMENTS = true; 
 	/** Specify if type B cleavages should be computed (default = true)*/
 	public boolean ADD_CFRAGMENTS = true; 
-	/** Specify if type X ring fragments should be computed (default = false)*/
-	public boolean ADD_XFRAGMENTS = false;
+	/** Specify if type X ring fragments should be computed (default = true)*/
+	public boolean ADD_XFRAGMENTS = true;
 	/** Specify if type Y cleavages should be computed (default = true)*/
 	public boolean ADD_YFRAGMENTS = true; 
 	/** Specify if type Z cleavages should be computed (default = true)*/
 	public boolean ADD_ZFRAGMENTS = true;    
 
 	/** Specify if fragments with internal cross ring cleavages
-    should be computed (default = false) */
-	public boolean INTERNAL_FRAGMENTS = false;
+    should be computed (default = true) */
+	public boolean INTERNAL_FRAGMENTS = true;
 
 	/** Specify the maximum number of glycosidic cleavages to compute
     for a fragment (default = 2) */

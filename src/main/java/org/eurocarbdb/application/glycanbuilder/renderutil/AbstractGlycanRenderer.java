@@ -25,6 +25,7 @@ import java.util.LinkedList;
 
 import org.eurocarbdb.application.glycanbuilder.BookingManager;
 import org.eurocarbdb.application.glycanbuilder.Glycan;
+import org.eurocarbdb.application.glycanbuilder.GlycanShorthandConverterLDA;
 import org.eurocarbdb.application.glycanbuilder.Pair;
 import org.eurocarbdb.application.glycanbuilder.Residue;
 import org.eurocarbdb.application.glycanbuilder.ResiduePlacement;
@@ -286,7 +287,7 @@ public abstract class AbstractGlycanRenderer implements GlycanRenderer{
 		StringBuilder sb = new StringBuilder();
 		DecimalFormat df = new DecimalFormat("0.0000");
 		double mz = structure.computeMZ();
-		sb.append(buildGlycanName(structure));
+		sb.append(new GlycanShorthandConverterLDA().buildGlycanShorthand(structure));
 		sb.append("; glycan headgroup: ");
 		sb.append(chemicalFormula);
 		sb.append("; m/z: ");
@@ -297,54 +298,6 @@ public abstract class AbstractGlycanRenderer implements GlycanRenderer{
 		sb.append("]");
 
 		return sb.toString();
-	}
-	
-	/**
-	 * Builds the glycan shorthand based on the LDA nomenclature
-	 */
-	private String buildGlycanName(Glycan structure)
-	{
-		StringBuilder sb = new StringBuilder();
-		ArrayList<Residue> allResidues = new ArrayList<Residue>();
-		if( structure.getRoot()!=null ) {
-			allResidues.addAll(collectChildResidues(structure.getRoot()));
-		}
-		TreeMap<String,Integer> residueCount = new TreeMap<String,Integer>();
-		for (Residue res : allResidues)
-		{
-			String resDesc = res.getType().getMSDefaultDescriptor();
-			if (!residueCount.containsKey(resDesc)) residueCount.put(resDesc, 0);
-			residueCount.put(resDesc, residueCount.get(resDesc)+1);
-		}
-		ArrayList<String> resTypes = new ArrayList(residueCount.keySet());
-		Collections.sort(resTypes);
-		if (resTypes.contains("Cer")) //ensuring Cer is at the end
-		{
-			resTypes.remove("Cer");
-			resTypes.add("Cer");
-		}
-		for (int i=0;i<resTypes.size();i++)
-		{
-			String res = resTypes.get(i);
-			sb.append(res);
-			sb.append(residueCount.get(res) > 1 ? residueCount.get(res) : "");
-			if (i<resTypes.size()-1)
-				sb.append("_");
-		}
-		
-		return sb.toString();
-	}
-	
-	/**
-	 * Collects all children of a residue in a list
-	 */
-	private ArrayList<Residue> collectChildResidues(Residue r)
-	{
-		ArrayList<Residue> children = new ArrayList<Residue>();
-		children.add(r);
-		for( Linkage l : r.getChildrenLinkages() )
-			children.addAll(collectChildResidues(l.getChildResidue()));
-		return children;
 	}
 
 	abstract protected void paintQuantity(Paintable paintable, Residue antennae, int quantity,BBoxManager bboxManager);
