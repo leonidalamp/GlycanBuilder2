@@ -21,9 +21,6 @@
 package org.eurocarbdb.application.glycanbuilder;
 
 import org.eurocarbdb.MolecularFramework.sugar.LinkageType;
-import org.eurocarbdb.MolecularFramework.sugar.Sugar;
-import org.eurocarbdb.application.glycanbuilder.converterGlycoCT.GlycoCTCondensedParser;
-import org.eurocarbdb.application.glycanbuilder.converterGlycoCT.GlycoCTParser;
 import org.eurocarbdb.application.glycanbuilder.converterGWS.GWSParser;
 import org.eurocarbdb.application.glycanbuilder.dataset.ResidueDictionary;
 import org.eurocarbdb.application.glycanbuilder.linkage.Bond;
@@ -1919,112 +1916,6 @@ public class Glycan implements Comparable, SAXUtils.SAXWriter, MassAware {
 	}
 
 	/**
-       Return a string representation of the structure in the GlycoCT format
-       @see GlycoCTParser#toGlycoCT
-	 */
-	public String toGlycoCT() {
-		return new GlycoCTParser(false).toGlycoCT(this);
-	}
-
-	/**
-       Return a string representation of the structure in the GlycoCT
-       condensed format
-       @see GlycoCTCondensedParser#toGlycoCTCondensed
-	 */
-	public String toGlycoCTCondensed() {
-		return new GlycoCTCondensedParser(false).toGlycoCTCondensed(this);
-	}
-
-	/**
-       Return a {@link Sugar Sugar} object representing this structure.
-       @see GlycoCTParser#toSugar
-	 */
-	public Sugar toSugar() throws Exception {
-		return new GlycoCTParser(false).toSugar(this);
-	}
-
-	/**
-       Create a new glycan structure from a string in GlycoCT format.
-       @see GlycoCTParser#fromGlycoCT
-	 */
-	static public Glycan fromGlycoCT(String str) {
-		try {
-			return new GlycoCTParser(false).fromGlycoCT(str,new MassOptions());
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-			LogUtils.report(e);
-			return null;
-		}
-	}
-
-	/**
-       Create a new glycan structure from a string in GlycoCT format
-       with the specific mass settings.
-       @see GlycoCTParser#fromGlycoCT
-	 */
-	static public Glycan fromGlycoCT(String str, MassOptions default_mass_options) {
-		try {
-			return new GlycoCTParser(false).fromGlycoCT(str,default_mass_options);
-		}
-		catch(Exception e) {
-			LogUtils.report(e);
-			return null;
-		}
-	}
-
-	/**
-       Create a new glycan structure from a string in GlycoCT
-       condensed format.
-       @see GlycoCTCondensedParser#fromGlycoCTCondensed
-	 */
-	static public Glycan fromGlycoCTCondensed(String str) {
-		try {
-			return new GlycoCTCondensedParser(false).fromGlycoCTCondensed(str,new MassOptions());
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-			LogUtils.report(e);
-			return null;
-		}
-	}
-
-	/**
-       Create a new glycan structure from a string in GlycoCT
-       condensed format.
-       @param tolerate_unknown if <code>true</code> tolerate residues
-       of a type that is not specified in the dictionary
-       @see ResidueDictionary
-       @see GlycoCTCondensedParser#fromGlycoCTCondensed
-	 */
-	static public Glycan fromGlycoCTCondensed(String str, boolean tolerate_unknown) {
-		try {
-			return new GlycoCTCondensedParser(tolerate_unknown).fromGlycoCTCondensed(str,new MassOptions());
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-			LogUtils.report(e);
-			return null;
-		}
-	}
-
-	/**
-       Create a new glycan structure from a string in GlycoCT
-       condensed format with the specific mass settings.
-       @see GlycoCTCondensedParser#fromGlycoCTCondensed
-	 */
-	static public Glycan fromGlycoCTCondensed(String str, MassOptions default_mass_options) {
-		try {
-			return new GlycoCTCondensedParser(false).fromGlycoCTCondensed(str,default_mass_options);
-		}
-		catch(Exception e) {
-			LogUtils.report(e);
-			return null;
-		}
-	}
-
-
-	/**
        Create a new glycan structure from its XML representation as
        part of a DOM tree.
 	 */
@@ -2097,7 +1988,8 @@ public class Glycan implements Comparable, SAXUtils.SAXWriter, MassAware {
 		if((aware instanceof Glycan)==false){
 			return false;
 		}else{
-			return toGlycoCTCondensed().equals(((Glycan)aware).toGlycoCT()) && computeMZ()==((Glycan)aware).computeMZ();
+			return toStringOrdered().equals(((Glycan)aware).toStringOrdered())
+					&& computeMZ() == ((Glycan)aware).computeMZ();
 		}
 	}
 

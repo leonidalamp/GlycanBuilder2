@@ -27,13 +27,15 @@ import java.util.*;
 
 import javax.swing.*;
 
+import org.pushingpixels.flamingo.api.common.icon.ResizableIcon;
 import org.eurocarbdb.application.glycanbuilder.EurocarbResizableIcon;
 import org.eurocarbdb.application.glycanbuilder.GlycanAction;
 import org.eurocarbdb.application.glycanbuilder.ICON_SIZE;
 import org.eurocarbdb.application.glycanbuilder.ThemeManager;
 
-import test.common.IconWrapperResizableIcon;
-
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.event.*;
 
 /**
@@ -47,6 +49,34 @@ import java.awt.event.*;
 public class ActionManager {
 
 	protected HashMap<String, GlycanAction> theActions;
+
+	private static final class IconWrapperResizableIcon implements ResizableIcon {
+		private final Icon delegate;
+
+		private IconWrapperResizableIcon(Icon delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public int getIconHeight() {
+			return delegate.getIconHeight();
+		}
+
+		@Override
+		public int getIconWidth() {
+			return delegate.getIconWidth();
+		}
+
+		@Override
+		public void paintIcon(Component component, Graphics graphics, int x, int y) {
+			delegate.paintIcon(component, graphics, x, y);
+		}
+
+		@Override
+		public void setDimension(Dimension dimension) {
+			// The wrapped Swing icon has a fixed intrinsic size.
+		}
+	}
 
 	/**
 	 * Default constructor.

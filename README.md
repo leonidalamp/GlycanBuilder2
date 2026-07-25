@@ -23,9 +23,22 @@
   * macOS (64bit/Intel&M1,M2)
 
 
+## LDA Java 21 distribution
+
+This branch builds the light GlycanBuilder distribution embedded by Lipid Data
+Analyzer 2. It retains the editor, GWS/WURCS import and export, LDA shorthand
+conversion, fragmentation, rendering, and raster/SVG export workflows used by
+LDA. Legacy GlycoCT parsers, PDF/PostScript export, NativeSwing/SWT integration,
+JGoodies, and Ant launcher dependencies are excluded because LDA does not use
+them and their transitive libraries conflict with the Java 21 module system.
+
 ## Requirement
-* Java 8 (or later)
-* maven 3.6 (or later)
+* Java 21
+* Maven 3.9 (or later)
+
+Before building, run `mvn -version` and verify that Maven reports Java 21.
+Setting only the Eclipse execution environment is not sufficient; Maven uses
+the JDK selected by `JAVA_HOME`.
 
 ## Release node
 Latest version: 1.25.0\\
@@ -45,27 +58,22 @@ cd ~/Directory_of_local_repository/GlycanBuilder2
 mvn clean compile
 ```
 
-If a certificate error such as "PKIX path validation failed" occurred during the compilation process, please you try again with the below command.
-```
-mvn clean compile -X -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true
-```
-
 ## JAR file
 Runable JAR (Java Archive) file is generate the below command.
 ```
-mvn clean -P make-fat-jar package
+mvn clean package -Pmake-fat-jar
 ```
 
 When compilation in finished, jar file is created in the target folder.
->[INFO] Building jar: /../../Directory_of_local_repository/GlycanBuilder2/target/glycanbuilder2-jar-with-dependencies.jar
+>[INFO] Building jar: /../../Directory_of_local_repository/GlycanBuilder2/target/glycanbuilder2-lda-java21.jar
 
 - Windows or Linux
 ```
-java -jar ./target/glycanbuilder2-jar-with-dependencies.jar
+java -jar ./target/glycanbuilder2-lda-java21.jar
 ```
 - Mac OS X
 ```
-java -XstartOnFirstThread -jar ./target/glycanbuilder2-jar-with-dependencies.jar
+java -XstartOnFirstThread -jar ./target/glycanbuilder2-lda-java21.jar
 ```
 ## Example
 
@@ -94,4 +102,3 @@ java -XstartOnFirstThread -jar ./target/glycanbuilder2-jar-with-dependencies.jar
 ## Publications
 * [Shinichiro Tsuchiya, Nobuyuki P. Aoki, Daisuke Shinmachi, Masaaki Matsubara, Issaku Yamada, Kiyoko F. Aoki-Kinoshita, Hisashi Narimatsu,
 Implementation of GlycanBuilder to draw a wide variety of ambiguous glycans, Carbohydrate Research, Volume 445, 2017, Pages 104-116](https://www.sciencedirect.com/science/article/pii/S0008621516305316)
-

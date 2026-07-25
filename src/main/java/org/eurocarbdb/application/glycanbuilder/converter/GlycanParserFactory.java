@@ -22,14 +22,11 @@ package org.eurocarbdb.application.glycanbuilder.converter;
 
 import java.util.*;
 
-import org.eurocarbdb.application.glycanbuilder.converterGlycoCT.GlycoCTParser;
-import org.eurocarbdb.application.glycanbuilder.converterGlycoCT.MolecularFrameworkParser;
 import org.eurocarbdb.application.glycanbuilder.converterGlycoMinds.GlycoMindsParser;
 import org.eurocarbdb.application.glycanbuilder.converterLINUCS.LinucsParser;
 import org.eurocarbdb.application.glycanbuilder.converterGWS.GWSParser;
 import org.glycoinfo.application.glycanbuilder.converterWURCS1.WURCSParser;
 import org.glycoinfo.application.glycanbuilder.converterWURCS2.WURCS2Parser;
-import org.glycoinfo.application.glycanbuilder.converterWURCS2.WURCS2ParserViaCT;
 
 /**
    Factory class used to create instances of parsers for glycan
@@ -56,7 +53,7 @@ public class GlycanParserFactory {
        GlycoWorkbench formats to the map
 	 */
 	public static Map<String,String> getImportFormats(boolean add_internal) {
-		Map<String,String> ret = MolecularFrameworkParser.getImportFormats();
+		Map<String,String> ret = new LinkedHashMap<String,String>();
 		if( add_internal )
 			ret.put("GWS","GlycoWorkbench sequence");
 		ret.put("glycominds","Glycominds");
@@ -74,7 +71,7 @@ public class GlycanParserFactory {
        of each format.
 	 */
 	public static Map<String,String> getExportFormats() {
-		Map<String,String> ret =  MolecularFrameworkParser.getExportFormats();
+		Map<String,String> ret = new LinkedHashMap<String,String>();
 		ret.put("GWS", "GlycoWorkbench sequence");
 		ret.put("glycominds","Glycominds");
 		ret.put("wurcs2", "WURCS Encoding");
@@ -91,7 +88,7 @@ public class GlycanParserFactory {
        of each format.
 	 */
 	static public Map<String,String> getFormats() {
-		Map<String,String> ret = MolecularFrameworkParser.getFormats();
+		Map<String,String> ret = new LinkedHashMap<String,String>();
 		ret.put("GWS","GlycoWorkbench sequence");
 		ret.put("glycominds","Glycominds");
 		ret.put("gwlinucs","Linucs");
@@ -139,11 +136,8 @@ public class GlycanParserFactory {
        @throws Exception if the identifier does not represent a valid format
        @deprecated
 	 */
+	@Deprecated
 	static public GlycanParser getParser(String format) throws Exception{
-
-		// molecular framework formats
-		if( MolecularFrameworkParser.isSequenceFormat(format) )
-			return new MolecularFrameworkParser(format);
 
 		// internal formats
 		if( format.compareToIgnoreCase("gws")==0 ) 
@@ -152,10 +146,6 @@ public class GlycanParserFactory {
 			return new LinucsParser();
 		else if( format.compareToIgnoreCase("glycominds")==0 ) 
 			return new GlycoMindsParser();
-		else if( format.compareToIgnoreCase("glycoct")==0 ) 
-			return new GlycoCTParser(false);
-		else if( format.compareToIgnoreCase("glycoct_condensed")==0 ) 
-			return new GlycoCTParser(false);
 		else if( format.compareToIgnoreCase("wurcs2")==0 )
 			return new WURCS2Parser();
 //		else if( format.compareToIgnoreCase("rings")==0 ) 

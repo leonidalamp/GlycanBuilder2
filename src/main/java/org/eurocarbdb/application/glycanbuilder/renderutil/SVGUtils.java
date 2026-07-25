@@ -25,14 +25,13 @@ import java.awt.image.*;
 import java.io.*;
 import java.util.*;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.w3c.dom.*;
-import org.apache.batik.ext.awt.g2d.GraphicContext;
-import org.eurocarbdb.application.glycanbuilder.DefaultPaintable;
 import org.eurocarbdb.application.glycanbuilder.Glycan;
 import org.eurocarbdb.application.glycanbuilder.logutility.LogUtils;
 import org.eurocarbdb.application.glycanbuilder.util.GraphicUtils;
-import org.glycoinfo.WURCSFramework.util.residuecontainer.ResidueContainer;
 
 /**
    Utility class containing functions to export glycan structures and
@@ -80,9 +79,6 @@ public class SVGUtils   {
     public static Map<String,String> getExportFormats() {
     TreeMap<String,String> map = new TreeMap<String,String>();
     map.put("svg","SVG");
-    map.put("pdf","PDF");
-    map.put("ps","PS");
-    map.put("eps","EPS");
     map.put("bmp","BMP");
     map.put("png","PNG");
     //map.put("gif","GIF");
@@ -128,7 +124,8 @@ public class SVGUtils   {
 
         try {
             // Create an instance of the SVG Generator
-            DOMImplementation domImpl = org.apache.batik.dom.GenericDOMImplementation.getDOMImplementation();
+            DOMImplementation domImpl = DocumentBuilderFactory.newInstance()
+                    .newDocumentBuilder().getDOMImplementation();
             Document document = domImpl.createDocument(null, "svg", null);
             GroupingSVGGraphics2D g2d = new GroupingSVGGraphics2D(document, true);
 
@@ -174,7 +171,8 @@ public class SVGUtils   {
 
     	try {
     		// Create an instance of the SVG Generator
-    		DOMImplementation domImpl = org.apache.batik.dom.GenericDOMImplementation.getDOMImplementation();
+			DOMImplementation domImpl = DocumentBuilderFactory.newInstance()
+                    .newDocumentBuilder().getDOMImplementation();
     		Document document = domImpl.createDocument(null, "svg", null);
     		GroupingSVGGraphics2D g2d = new GroupingSVGGraphics2D(document,true);
 
@@ -212,83 +210,11 @@ public class SVGUtils   {
     	}
     }    
 
-    /**
-       Return a representation of a set of glycan structure as an
-       array of bytes in PDF format
-       @param gr the GlycanRenderer used to render the structures
-       @param structures the structures to be rendered
-     */
-    static public byte[] getPDFGraphics(GlycanRenderer gr, Collection<Glycan> structures) {
-    return getTranscodedSVG(gr,structures,false,false, new org.apache.fop.svg.PDFTranscoder());
-    }
-
-    /**
-       Return a representation of a set of glycan structure as an
-       array of bytes in PDF format 
-       @param gr the GlycanRenderer used to render the structures
-       @param structures the structures to be rendered
-       @param show_masses <code>true</code> if the mass information
-       should be included in the graphical representation
-       @param show_redend <code>true</code> if the reducing end marker
-       should be included in the graphical representation
-     */
-    static public byte[] getPDFGraphics(GlycanRenderer gr, Collection<Glycan> structures, boolean show_masses, boolean show_redend) {
-    return getTranscodedSVG(gr,structures,show_masses,show_redend, new org.apache.fop.svg.PDFTranscoder());
-    }
-
-    /**
-       Return a representation of a set of glycan structure as an
-       array of bytes in PS format
-       @param gr the GlycanRenderer used to render the structures
-       @param structures the structures to be rendered
-     */
-    static public byte[] getPSGraphics(GlycanRenderer gr, Collection<Glycan> structures) {
-    return getTranscodedSVG(gr,structures,false,false, new org.apache.fop.render.ps.PSTranscoder());
-    }
-
-    /**
-       Return a representation of a set of glycan structure as an
-       array of bytes in PS format 
-       @param gr the GlycanRenderer used to render the structures
-       @param structures the structures to be rendered
-       @param show_masses <code>true</code> if the mass information
-       should be included in the graphical representation
-       @param show_redend <code>true</code> if the reducing end marker
-       should be included in the graphical representation
-     */
-    static public byte[] getPSGraphics(GlycanRenderer gr, Collection<Glycan> structures, boolean show_masses, boolean show_redend) {
-    return getTranscodedSVG(gr,structures,show_masses,show_redend, new org.apache.fop.render.ps.PSTranscoder());
-    }
-
-    /**
-       Return a representation of a set of glycan structure as an
-       array of bytes in EPS format
-       @param gr the GlycanRenderer used to render the structures
-       @param structures the structures to be rendered
-     */
-    static public byte[] getEPSGraphics(GlycanRenderer gr, Collection<Glycan> structures) {
-    return getTranscodedSVG(gr,structures,false,false, new org.apache.fop.render.ps.EPSTranscoder());
-    }
-
-    /**
-       Return a representation of a set of glycan structure as an
-       array of bytes in EPS format 
-       @param gr the GlycanRenderer used to render the structures
-       @param structures the structures to be rendered
-       @param show_masses <code>true</code> if the mass information
-       should be included in the graphical representation
-       @param show_redend <code>true</code> if the reducing end marker
-       should be included in the graphical representation
-     */
-    static public byte[] getEPSGraphics(GlycanRenderer gr, Collection<Glycan> structures, boolean show_masses, boolean show_redend) {
-    return getTranscodedSVG(gr,structures,show_masses,show_redend, new org.apache.fop.render.ps.EPSTranscoder());
-    }
-
-
-    static private org.apache.batik.svggen.SVGGraphics2D prepareGraphics(Dimension all_dim) {
+    static private org.apache.batik.svggen.SVGGraphics2D prepareGraphics(Dimension all_dim) throws Exception {
 
     // Create an instance of the SVG Generator
-    DOMImplementation domImpl = org.apache.batik.dom.GenericDOMImplementation.getDOMImplementation();
+    DOMImplementation domImpl = DocumentBuilderFactory.newInstance()
+            .newDocumentBuilder().getDOMImplementation();
     Document document = domImpl.createDocument(null, "svg", null);       
     org.apache.batik.svggen.SVGGraphics2D g2d = new org.apache.batik.svggen.SVGGraphics2D(document);
 
@@ -308,73 +234,7 @@ public class SVGUtils   {
     }
 
 
-    static private byte[] transcode(org.apache.batik.svggen.SVGGraphics2D g2d, Dimension all_dim,org.apache.batik.transcoder.Transcoder transcoder) throws Exception {
-
-    // Stream out SVG to a string          
-    StringWriter out = new StringWriter();
-    g2d.stream(out, true);        
-    String svg = out.toString();
-
-    // 
-    if( transcoder==null ) 
-        return svg.getBytes();
-    
-    // set transcoder dimensions
-    transcoder.addTranscodingHint(org.apache.batik.transcoder.image.ImageTranscoder.KEY_BACKGROUND_COLOR, Color.white);        
-    transcoder.addTranscodingHint(org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_PIXEL_UNIT_TO_MILLIMETER, new Float(0.3528f));
-    transcoder.addTranscodingHint(org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_MAX_WIDTH,new Float(all_dim.width));
-    transcoder.addTranscodingHint(org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_MAX_HEIGHT,new Float(all_dim.height));
-    transcoder.addTranscodingHint(org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_WIDTH,new Float(all_dim.width));
-    transcoder.addTranscodingHint(org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_HEIGHT,new Float(all_dim.height));
-    transcoder.addTranscodingHint(org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_AOI,new Rectangle(0,0,all_dim.width,all_dim.height));
-        
-    // transcode
-    StringReader in = new StringReader(svg);
-        
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    BufferedOutputStream bos = new BufferedOutputStream(baos);
-        
-    org.apache.batik.transcoder.TranscoderInput input = new org.apache.batik.transcoder.TranscoderInput(in);
-    org.apache.batik.transcoder.TranscoderOutput output = new org.apache.batik.transcoder.TranscoderOutput(bos);  
-    transcoder.transcode(input, output);
-    //fos.close();
-    return baos.toByteArray();
-    }
-
-    static private byte[] getTranscodedSVG(GlycanRenderer gr, Collection<Glycan> structures, boolean show_masses, boolean show_redend, org.apache.batik.transcoder.Transcoder transcoder) {
-    if( structures == null )
-        structures = new LinkedList<>();
-
-    try {
-        // compute size
-        PositionManager posManager = new PositionManager();
-        BBoxManager bboxManager = new BBoxManager();
-        Rectangle all_bbox = gr.computeBoundingBoxes(structures,show_masses,show_redend,posManager,bboxManager);    
-        Dimension all_dim = gr.computeSize(all_bbox);       
-
-        // prepare g2d
-        org.apache.batik.svggen.SVGGraphics2D g2d = prepareGraphics(all_dim);    
-
-        // fix EPS bug (flip vertically)
-        if( transcoder!=null && transcoder instanceof org.apache.fop.render.ps.EPSTranscoder ) {
-        g2d.scale(1,-1);
-        g2d.translate(0,-all_dim.height);
-        }
-
-        // paint
-        for( Glycan s : structures ) 
-        gr.paint(new DefaultPaintable(g2d),s,null,null,show_masses,show_redend,posManager,bboxManager);
-
-        // transcode
-        return transcode(g2d,all_dim,transcoder);
-    } 
-    catch(Exception e) {        
-        LogUtils.report(e);
-        return null;
-    }
-    }    
-     
-    static private byte[] getTranscodedSVG(Renderable renderable, org.apache.batik.transcoder.Transcoder transcoder) {
+    static private byte[] getRenderableVectorGraphics(Renderable renderable) {
     try {
         renderable.beforeRendering();
         
@@ -382,19 +242,14 @@ public class SVGUtils   {
         Dimension all_dim = renderable.getRenderableSize();
         org.apache.batik.svggen.SVGGraphics2D g2d = prepareGraphics(all_dim);
 
-        // fix EPS bug (flip vertically)
-        if( transcoder!=null && (transcoder instanceof org.apache.fop.render.ps.EPSTranscoder) ) {
-        g2d.scale(1,-1);
-        g2d.translate(0,-all_dim.height);
-        }
-
         // paint
         renderable.paintRenderable(g2d);
         
         renderable.afterRendering();
         
-        // transcode
-        return transcode(g2d,all_dim,transcoder);
+        StringWriter out = new StringWriter();
+        g2d.stream(out, true);
+        return out.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8);
     } 
     catch(Exception e) {        
         LogUtils.report(e);
@@ -600,12 +455,6 @@ public class SVGUtils   {
     static public void export(OutputStream os, GlycanRendererAWT gr, Collection<Glycan> structures, boolean show_masses, boolean show_redend, double scale, String format,PositionManager posManager,BBoxManager bboxManager) throws Exception {
     if( format.equals("svg") )
         os.write(getVectorGraphics(gr,structures,show_masses,show_redend).getBytes());
-    else if( format.equals("pdf") )        
-        os.write(getPDFGraphics(gr,structures,show_masses,show_redend));
-    else if( format.equals("ps") )        
-        os.write(getPSGraphics(gr,structures,show_masses,show_redend));
-    else if( format.equals("eps") )
-        os.write(getEPSGraphics(gr,structures,show_masses,show_redend));
     else if( format.equals("bmp") || format.equals("png") || format.equals("jpg") )        
         javax.imageio.ImageIO.write(gr.getImage(structures,true,show_masses,show_redend,scale,posManager,bboxManager),format,os);
     else
@@ -636,17 +485,10 @@ public class SVGUtils   {
     */
     static public void export(OutputStream os, Renderable renderable, String format) throws Exception {
     if( format.equals("svg") )
-        os.write(getTranscodedSVG(renderable,null));
-    else if( format.equals("pdf") )        
-        os.write(getTranscodedSVG(renderable, new org.apache.fop.svg.PDFTranscoder()));
-    else if( format.equals("ps") )        
-        os.write(getTranscodedSVG(renderable, new org.apache.fop.render.ps.PSTranscoder()));
-    else if( format.equals("eps") )
-        os.write(getTranscodedSVG(renderable, new org.apache.fop.render.ps.EPSTranscoder()));
+        os.write(getRenderableVectorGraphics(renderable));
     else if( format.equals("bmp") || format.equals("png") || format.equals("jpg") )        
         javax.imageio.ImageIO.write(getImage(renderable),format,os);
     else
         throw new Exception("Unrecognized graphic format: " + format);    
     }
 }
-

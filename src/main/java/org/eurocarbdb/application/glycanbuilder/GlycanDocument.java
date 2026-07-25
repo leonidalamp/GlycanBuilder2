@@ -27,8 +27,6 @@ import java.util.*;
 import org.eurocarbdb.MolecularFramework.sugar.LinkageType;
 import org.eurocarbdb.application.glycanbuilder.converter.GlycanParser;
 import org.eurocarbdb.application.glycanbuilder.converter.GlycanParserFactory;
-import org.eurocarbdb.application.glycanbuilder.converterGlycoCT.GlycoCTCondensedParser;
-import org.eurocarbdb.application.glycanbuilder.converterGlycoCT.GlycoCTParser;
 import org.eurocarbdb.application.glycanbuilder.converterGWS.GWSParser;
 import org.eurocarbdb.application.glycanbuilder.dataset.ResidueDictionary;
 import org.eurocarbdb.application.glycanbuilder.fileutil.ExtensionFileFilter;
@@ -1380,31 +1378,6 @@ public class GlycanDocument extends BaseDocument implements SAXUtils.SAXWriter {
 	}
 
 	/**
-	 * Return a GlycoCT representation of the structures contained in the
-	 * document.
-	 *
-	 * @see GlycoCTParser
-	 */
-	public String toGlycoCT() {
-		return toString(structures, new GlycoCTParser(false));
-	}
-
-	/**
-	 * Return a GlycoCTCondensed representation of the structures contained in the
-	 * document.
-	 *
-	 * @see GlycoCTParser
-	 */
-	public String toGlycoCTCondensed() {
-		return toString(structures, new GlycoCTCondensedParser(false));
-	}
-
-	protected void fromGlycoCT(String str, boolean merge, boolean fire,
-							   boolean tolerate) throws Exception {
-		fromString(str, merge, fire, new GlycoCTParser(tolerate));
-	}
-
-	/**
 	 * Create a string representation of the structures contained in the
 	 * document.
 	 *
@@ -1493,33 +1466,14 @@ public class GlycanDocument extends BaseDocument implements SAXUtils.SAXWriter {
 	}
 
 	public void fromURL(final String resourceLocation, final String format) throws Exception {
-		java.security.AccessController.doPrivileged(
-				new java.security.PrivilegedAction<String>() {
-					public String run() {
-						try {
-							InputStream inStream = null;
-
-							URL url = new URL(resourceLocation);
-							inStream = url.openStream();
-
-							BufferedReader reader = new BufferedReader(new InputStreamReader(inStream));
-
-							StringBuffer buffer = new StringBuffer();
-
-							String line;
-							while ((line = reader.readLine()) != null) {
-								buffer.append(line + "\n");
-							}
-
-							fromString(buffer.toString(), format);
-						} catch (Exception ex) {
-							LogUtils.report(ex);
-						}
-
-						return null;
-					}
-				}
-		);
+		URL url = new URL(resourceLocation);
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
+			StringBuilder buffer = new StringBuilder();
+			String line;
+			while ((line = reader.readLine()) != null)
+				buffer.append(line).append('\n');
+			fromString(buffer.toString(), format);
+		}
 	}
 
 	/**

@@ -97,8 +97,6 @@ public class ReportDialog extends EscapeDialog implements ActionListener {
                             "Warning", JOptionPane.YES_NO_OPTION, 
                             JOptionPane.WARNING_MESSAGE, null, null, null);  
         if( retValue==JOptionPane.YES_OPTION ) {
-        System.gc();
-        System.runFinalization();
         System.exit(0);
         }
     }

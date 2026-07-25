@@ -37,7 +37,6 @@ import javax.swing.ImageIcon;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.tools.ant.launch.Locator;
 import org.eurocarbdb.application.glycanbuilder.util.IconProperties;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 
@@ -116,20 +115,14 @@ public class ICON_PATH {
 		// 20221130 S.TSUCHIYA comment out, investigating the error about java.io.FileNotFoundException
 		//ThemeManager.log.setLevel(Level.INFO);
 
-		URL url;
-		if (clazz.getResource(iconPath) == null) {
-			String urlString = Locator.getClassSource(clazz).getParent()
-					+ iconPath;
-
-			if (urlString.contains("!")) {
-				urlString = "jar:" + urlString.replaceAll("\\\\", "/");
-			} else {
-				urlString = "file:" + urlString;
-			}
-
-			url = new URL(urlString);
-		} else {
-			url = clazz.getResource(iconPath);
+		URL url = clazz.getResource(iconPath);
+		if (url == null) {
+			URL classLocation = clazz.getProtectionDomain().getCodeSource().getLocation();
+			String location = classLocation.toExternalForm();
+			int lastSlash = location.lastIndexOf('/');
+			String base = lastSlash >= 0 ? location.substring(0, lastSlash + 1) : location;
+			String relativePath = iconPath.startsWith("/") ? iconPath.substring(1) : iconPath;
+			url = new URL(base + relativePath);
 		}
 
 		this.iconPath = url;

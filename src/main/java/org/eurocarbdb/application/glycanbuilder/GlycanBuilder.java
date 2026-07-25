@@ -28,8 +28,6 @@ import javax.swing.border.*;
 import org.eurocarbdb.application.glycanbuilder.converter.GlycanParserFactory;
 import org.eurocarbdb.application.glycanbuilder.util.ActionManager;
 import org.eurocarbdb.application.glycanbuilder.util.MouseUtils;
-import chrriis.dj.nativeswing.swtimpl.NativeInterface;
-
 import org.eurocarbdb.application.glycanbuilder.dataset.CoreDictionary;
 import org.eurocarbdb.application.glycanbuilder.fileutil.ExtensionFileFilter;
 import org.eurocarbdb.application.glycanbuilder.fileutil.FileHistory;
@@ -136,7 +134,6 @@ public class GlycanBuilder extends JPanel implements ActionListener, BaseDocumen
 		theCanvas = new GlycanCanvas(parentFrame,theWorkspace, themeManager, false);     
 
 		// set the toolbars
-		UIManager.getDefaults().put("ToolTip.hideAccelerator",Boolean.TRUE);
 		theToolBarPanel = new JPanel(new BorderLayout());
 
 		theToolBarFile = createToolBarFile();
@@ -184,10 +181,6 @@ public class GlycanBuilder extends JPanel implements ActionListener, BaseDocumen
 
 		updateActions();
 
-		NativeInterface.open();
-
-		JFrame.setDefaultLookAndFeelDecorated(true);
-		JDialog.setDefaultLookAndFeelDecorated(true);
 	}
 
 	/**
@@ -201,8 +194,6 @@ public class GlycanBuilder extends JPanel implements ActionListener, BaseDocumen
 
 		// clear memory
 		theWorkspace.init();
-		System.gc();
-		System.runFinalization();
 
 		// exit
 		System.exit(err_level);
@@ -898,30 +889,24 @@ public class GlycanBuilder extends JPanel implements ActionListener, BaseDocumen
        Run the application. Open the application frame
 	 * @throws MalformedURLException 
 	 */
-	public static void main(String[] args) throws MalformedURLException {
-		JFrame jf=new JFrame();
-    jf.setLayout(null);
-    jf.setSize(1000, 1000);
-    jf.setVisible(true);
-    jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    GlycanBuilder test = new GlycanBuilder(new JFrame());
-    NativeInterface.runEventPump();
-    
-    test.setBorder(null);
-    
-    JPanel panel = new JPanel();
-    panel.setSize(900,900);
-    panel.setLayout(new GridBagLayout());
-    panel.add(test, new GridBagConstraints(0,0,1,1,1.0,1.0,GridBagConstraints.CENTER,GridBagConstraints.BOTH,new Insets(5,5,5,5),5,5));
-    
-    jf.add(panel);
-    jf.repaint();
-    test.revalidate();
-    test.setVisible(false);
-    test.invalidate();
-    test.setVisible(true);
-    test.revalidate();
-    test.repaint();
+	public static void initStandalone() {
+		JFrame.setDefaultLookAndFeelDecorated(true);
+		JDialog.setDefaultLookAndFeelDecorated(true);
+	}
+
+	public static void main(String[] args) {
+		SwingUtilities.invokeLater(() -> {
+			try {
+				initStandalone();
+				JFrame frame = new JFrame("GlycanBuilder");
+				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				frame.setContentPane(new GlycanBuilder(frame));
+				frame.setSize(1000, 1000);
+				frame.setLocationRelativeTo(null);
+				frame.setVisible(true);
+			} catch (MalformedURLException ex) {
+				throw new IllegalStateException("Could not initialize GlycanBuilder", ex);
+			}
+		});
 	}
 }
-
